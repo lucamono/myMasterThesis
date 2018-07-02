@@ -1,7 +1,7 @@
 # myMasterThesis
 Learning to grasp unknown objects with a robotic arm from experience
 
-This repository contains the pdf of my Master Thesis on Artificial Intelligence and Robotics and the two folders related to my project: Grasping_software and my_grasping_CNN, the first is a C++ software related to the acquisition of the dataset, the second is related to the CNN used, with inside the python files for Tensorflow framework and dataset conversion.
+This repository contains the latek files of my Master Thesis on Artificial Intelligence and Robotics and the two folders related to my project: Grasping_software and my_grasping_CNN, the first is a C++ software related to the acquisition of the dataset, the second is related to the CNN used, with inside the python files for Tensorflow framework and dataset conversion.
 
 To compile the Grasping_software you need to install in your machine: opencv-3.3.1 with CUDA=ON, the contributes opencv_contrib-3.3.1 and libfreenect2. You also need to download YOLO darknet from https://pjreddie.com/darknet/yolo/ and from Makefile export YOLO as libdarknet.so\libdarknet.a
 
