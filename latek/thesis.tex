@@ -1,0 +1,209 @@
+\documentclass[a4paper,oneside]{mystyle}
+% custom packages
+\usepackage{empheq}
+\usepackage{graphicx}
+\usepackage[font={small}]{caption}
+\usepackage{subcaption}
+\usepackage{framed}
+\usepackage{listings}
+\usepackage{wrapfig}
+\usepackage{sidecap}
+\usepackage{xcolor}
+\usepackage{lineno}
+\usepackage{marvosym}
+\usepackage{xstring}
+\usepackage{mfirstuc}
+\usepackage{pdfpages}
+\usepackage{lipsum}
+\usepackage{lettrine}
+%\usepackage[explicit]{titlesec}
+\usepackage{cancel}
+\usepackage[noabbrev]{cleveref}
+\usepackage{indentfirst}
+\usepackage{mathtools}
+\usepackage{algorithmicx}
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{hyperref}
+\usepackage{nicefrac}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{multirow}
+\usepackage{xcolor,colortbl}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% DOCUMENT METADATA
+
+\thesistype{Master thesis}
+\title{Learning to grasp unknown objects with a robotic arm from experience}
+
+\author{Luca Monorchio}
+\email{monorchio.1650427@studenti.uniroma1.it}
+\institute{RoCoCo - Cognitive robot teams laboratory\\[2pt]
+Department of Computer, Control and Management Engineering Antonio Ruberti\\[2pt]
+Sapienza University of Rome}
+
+\supervisors{Eng.\ Dr.\ Alberto Pretto}
+%\cosupervisors{Eng.\ Dominik Schlegel}
+
+\date{\today}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\lstset { %
+	language=C++,
+	backgroundcolor=\color{black!5}, % set backgroundcolor
+	basicstyle=\footnotesize,% basic font setting
+}
+
+%ds colors
+\definecolor{orange}{rgb}{1,0.4,0}
+\definecolor{green}{rgb}{0,0.5,0}
+
+%ds referencing
+\newcommand{\myref}[3]{\hyperref[#1]{#2} (\capitalisewords{#3} \ref{#1})}
+
+%ds blue box
+\definecolor{myblue}{rgb}{.9, .9, 1}
+
+\newlength\mytemplen
+\newsavebox\mytempbox
+\newcommand*\widefbox[1]{\fbox{\hspace{2em}#1\hspace{2em}}}
+
+\makeatletter
+\newcommand\mybluebox{%
+	\@ifnextchar[%]
+	{\@mybluebox}%
+	{\@mybluebox[0pt]}}
+
+\def\@mybluebox[#1]{%
+	\@ifnextchar[%]
+	{\@@mybluebox[#1]}%
+	{\@@mybluebox[#1][0pt]}}
+
+\def\@@mybluebox[#1][#2]#3{
+	\sbox\mytempbox{#3}%
+	\mytemplen\ht\mytempbox
+	\advance\mytemplen #1\relax
+	\ht\mytempbox\mytemplen
+	\mytemplen\dp\mytempbox
+	\advance\mytemplen #2\relax
+	\dp\mytempbox\mytemplen
+	\colorbox{myblue}{\hspace{1em}\usebox{\mytempbox}\hspace{1em}}}
+
+%ds global definitions
+\def\g2o{\texttt{g2o}}
+\def\zero{\mathbf{0}}
+\def\P{\mathcal P}
+\def\p{\mathbf{p}}
+\def\tp{\tilde{\p}}
+\def\tab{\phantom{tab}}
+\def\homx{\mathbf{\tilde{x}}}
+\def\trans{\mathbf{t}}
+\def\quat{\mathbf{q}}
+\def\state{\mathbf{x}}
+\def\SState{\mathbf{X}}
+\def\meas{\mathbf{z}}
+\def\tmeas{\tilde{\meas}}
+\def\Meas{\mathbf{Z}}
+\def\pred{\hat{\meas}}
+\def\Pred{\hat{\Meas}}
+\def\linstate{\breve{\state}}
+\def\Linstate{\breve{\SState}}
+\def\optstate{\state^\star}
+\def\Optstate{\State^\star}
+\def\dx{\Delta \state}
+\def\dz{\Delta \meas}
+\def\hessian{\mathbf{H}}
+\def\bvec{\mathbf{b}}
+\def\error{\mathbf{e}}
+\def\terror{\tilde{\error}}
+\def\jacob{\mathbf{J}}
+\def\tjacob{\tilde{\jacob}}
+\def\l{\mathbf{l}}
+\def\L{\mathbf{L}}
+\def\u{\mathbf{u}}
+\def\U{\mathbf{U}}
+\def\k{\mathbf{k}}
+\def\S{\mathbf{S}}
+\def\kdtree{\textit{K}-D tree}
+\def\T#1#2{^{#1}T_{#2}}
+\def\rot{\mathbf{R}}
+\def\v2t{\text{v2t}}
+\def\flatten#1{\text{flatten}\left({#1}\right)}
+\def\t2v#1#2{^{#1}\tau_{#2}}
+\def\deltat2v#1#2{^{#1}\Delta\tau_{#2}}
+\def\norm#1{\|{#1}\|}
+\def\skew#1{{\lfloor{#1}\rfloor}_\times}
+\def\chref#1{Chapter~\ref{ch:#1}}
+\def\secref#1{Sec.~\ref{#1}}
+\def\figref#1{Fig.~\ref{#1}}
+\def\tabref#1{Tab.~\ref{#1}}
+\def\eqref#1{Eq.~(\ref{#1})}
+\def\algref#1{Alg.~\ref{#1}}
+\def\lstref#1{Lst.~\ref{#1}}
+\def\ourmethod{\textit{g2o\_slim~}}
+\renewcommand{\thesubfigure}{\Alph{subfigure}}
+
+% mathemagical stuff
+\DeclareMathOperator*{\argmax}{argmax}
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\pluseq}{\mathrel{+}=}
+\newcommand{\asteq}{\mathrel{*}=}
+
+% indentation stuff
+\newlength\myindent
+\setlength\myindent{2em}
+\newcommand\bindent{%
+    \begingroup
+    \setlength{\itemindent}{\myindent}
+    \addtolength{\algorithmicindent}{\myindent}
+}
+\newcommand\eindent{\endgroup}
+
+\newcommand\mynote[1]{\textcolor{red}{#1}}
+
+\begin{document}
+	
+\frontmatter
+\begin{titlepage}
+\maketitle
+\cleardoublepage\null
+\thispagestyle{empty}
+\end{titlepage}
+
+\newcounter{notation}
+\input{chapters/0_abstract}
+
+\clearpage
+
+\tableofcontents
+\listoffigures
+\listoftables
+\mainmatter
+\newpage
+\input{chapters/0_introduction}
+\newpage
+\input{chapters/1_robot_grasping_with_antropomorphic_robots}
+\newpage
+\input{chapters/2_deep_learning_and_grasping}
+\newpage
+\input{chapters/3_the_proposed_method}
+\newpage
+\input{chapters/4_custom_built_dataset}
+\newpage
+\input{chapters/5_experiments}
+\newpage
+\input{chapters/6_conclusions}
+
+{
+\backmatter
+\newpage
+\bibliographystyle{splncs}
+%\bibliographystyle{apa-good}
+\bibliography{references}
+}
+
+%add appendix for dataset class
+\end{document}
