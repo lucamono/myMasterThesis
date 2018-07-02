@@ -1,0 +1,86 @@
+\chapter{The Proposed Method}\label{ch:proposed_method}
+In this section all the deep learning approaches that led us to the creation of our CNN will be explained.
+
+\section{Learning s Grasp Pose from RGB-D data}\label{sec:learning_rgb_depth}
+The main idea for this thesis work is to exploit the information obtained from the features of a rgb-depth image to predict possible grasping points for unknown objects within the image itself. Hence, what we
+expect from the network output, given an acquired rgb-depth image, should be the prediction of admissible grasping points in areas of the image where objects are present. The network should also be able to learn
+new grasping points even on agnostic training objects.
+
+\section{Regression with CNNs}\label{sec:regression}
+As just introduced, what we want to achieve is the estimation of an admissible grasping pose. Exploiting the features obtained thanks to the convolutional layers of the CNN, this estimation is done by performing 
+a regression on the entire rgb-depth image. The process consists of splitting the image into a cells grid, 8x8 in our case, in which each cell predicts a possible candidate point of grasping, as depicted in Figure
+\ref{fig:grids}.  
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{figures/3_the_proposed_method/grids}
+    \caption{\textbf{Cells grid example.} In red, each grid of the 8x8 square cells that compose the image.}  
+    \label{fig:grids}
+\end{figure}
+To choose the correct grasping point prediction, these values needs to be compared with the ground truth points of grasping inside the loss function. In the following sections of this chapter we will explain in detail
+the technical aspects, starting from the network structure, the loss function up to the generation of the ground truth data batch.
+
+\section{The used CNN}\label{sec:the_used_cnn}
+In figure \ref{fig:LMG_network} is shown in detail the structure of the CNN used for this work of thesis. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/3_the_proposed_method/my_custom_cnn}
+    \caption{\textbf{The LMG CNN structure.}} 
+    \label{fig:LMG_network}
+\end{figure}
+11 layers make up our neural network, especially all convolution filters and also the penultimate fully connected layer present a ReLu as AF. The last layer, 
+the second fully connected layer, uses a Sigmoid as AF because of an implementation choice consistent with the ground truth batches (section \ref{sec:cnn_advanced_explanation}). In 
+this way, excluding the possibility of negative values inside the cells, the loss function will encounters all the predicted values from the network in the range between 0 and 1, the 
+same range that represents the minimum and maximum distances of the points within a cell.  
+
+
+\section{The Grasping Loss Function}\label{sec:the_grasping_loss_func}
+The main and critical point of this thesis concerns the built of the loss function. Drawing inspiration from YOLO's loss function (equation \ref{eq:lossYOLO}) which needs 5 parameters \emph{x,y,w,h,c} to predict
+bounding boxes, we have created the our loss function in order to predict only admissible points of grasp in the whole image. Taking into account the 5 parameters \emph{x,y,r,p,c}, coming from our dataset, i.e.,
+grasping coordinates x and y, roll and pitch end-effector orientations, confidence score about success of grasp, our loss function has been builted as:
+\begin{equation}
+\begin{align*}
+\text{loss grasping} &= \lambda_{coord} \sum_{i=0}^{S^2} \big[\big(x_i - \hat{x_i}\big)^2 + \big(y_i - \hat{y_i}\big)^2\big] \\
+&+ \lambda_{orient} \sum_{i=0}^{S^2} \big[\big(r_i - \hat{r_i}\big)^2 + \big(p_i - \hat{p_i}\big)^2 \big] \\
+&+ \lambda_{grasp} \sum_{i=0}^{S^2} \Big(C_i - \hat{C_i}\Big)^2 \\
+&+ \lambda_{NOgrasp} \sum_{i=0}^{S^2} \Big(C_i - \hat{C_i}\Big)^2  
+\end{align*}
+\label{eq:loss_grasp}
+\end{equation}
+
+\section{Implementation details}\label{sec:implementation_details}
+Our network works by processing 424x424x4 rgb-depth images, for this reason all the images of the dataset are readjusted from the XVAC2Network.py python file by performing a crop from 
+512 x 424 pixels to 424 x 424 pixels so as to be able to manage images of square size within the network. Furthermore, additional black pixels are inserted in regions of rgb images in which the depth
+information are blank due to the registered mapping between rgb and depth images. The result of this processing is shown in figure \ref{fig:img_proc}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/3_the_proposed_method/img_proc}
+    \caption{\textbf{Image adaptation for the Network.} Picture shows the crop processing and the addition of black pixels at the nan pixels of the starting image.} 
+    \label{fig:img_proc}
+\end{figure}
+
+As always happens in deep learning, once the dimensions of the images have been adjusted, they must be normalized. The python file \emph{XVAC2Numpy.py} loads, normalizes and creates two associated numpy arrays 
+to feed the network. The first array contains image batches in which the rgb channels are normalized in the range from 0 to 1 and the depth channel is normalized between 0 and 1 including only the distance values 
+between the board and the camera to avoid the non relevant higher distances, as depicted in figure \ref{fig:depth_normalization}. The second array contains batches of five data values \emph{x,y,r,p,c} in which
+for the coordinates x,y and the roll angle a typical normalization from 0 to 1 is performed, instead for the pitch angle a custom normalization from 0 to 1 is performed due to the offset of 180 degrees for that
+angle. Finally, the confidence score value can assume only 2 different values: 0 in case of not grasping and 1 in case of grasping. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/3_the_proposed_method/depth_norm}
+    \caption{\textbf{Depth normalization example.} In this case the normalization boundary avoid to includes all the depth points located under the board.} 
+    \label{fig:depth_normalization}
+\end{figure}
+
+\subsection{Neighbouring Cells and Batch Generator }\label{subsec:neighbouring_cells}
+In YOLO network the ground truth cell contains the bounding box and  the cells adjacent to the ground truth cell take into account the distance to that specific bounding box. In this way the network performs more
+accuracy in the prediction of the bounding box due to the fact that also the neighbouring cells also contribute to the prediction. In our case a ground truth structure similar to this strategy adopted by the 
+creators of YOLO  has been exploited taking into account the distance of the ground truth point of grasping w.r.t. the nearest cells. The python file \emph{grids\_gt\_generator.py} performs this transformation in 
+which  the entire image is splitted into 8x8 square cells of dimension 53 pixels along x and y axis (figure \ref{fig:grids}) with the reference system, for each cell, located on the top left border of the cell. 
+The numpy array containing the values of the grasping point for a specific image must be assigned only and exclusively to the cell of interest and to the other three remaining cells closer to that point, as 
+depicted in figure \ref{fig:nearest_cells}. For all other remaining cells, the groundtruth must be set to 0. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.25]{figures/3_the_proposed_method/near_cells}
+    \caption{\textbf{Near cell distance.} Picture shows the distance of the point of grasping with respect each near cell.} 
+    \label{fig:nearest_cells}
+\end{figure}
+At this point we have generated all the necessary data to be able to start the training of the network.

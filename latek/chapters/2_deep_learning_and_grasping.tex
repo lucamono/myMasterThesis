@@ -1,0 +1,450 @@
+\chapter{Deep Learning and Grasping}\label{ch:deep_learning}
+This section will focus on most of theoretical and structural aspects related to Artificial Neural Networks (ANNs) as the Convolutional Neural Networks (CNNs) are now the state of the art in 
+the main tasks of robotic grasping. Their success comes from to being inspired by the model of connectivity between neurons devoted to processing the visual cortex of animals. 
+The receptive fields of different neurons overlap partially to cover the entire field of vision, from here the "convolutive" term derives from the structure of the artificial neural networks (ANNs)
+from which it is composed, i.e., a modified feed-forward network.
+
+\section{Introduction to Artificial Neural Networks}\label{sec:ann}
+\emph{Artificial Neural Networks} (ANNs) are born from the idea to emulate the functioning of the human brain. These network systems are based on the resolution of a given task, in particular the process
+comes from a series of mechanisms to learn the various informations available in order to deduce new informations, gradually improving the performance of the machine itself. They are now
+indispensable structures to solve engineering problems of artificial intelligence and also works in different technological fields such as electronics, computer science, simulation, and other disciplines; 
+considering computer vision for example, they can be used to recognize particular patterns within an image, meaning that it is possible to distinguish objects in different images from images labeled with ``object present 
+or missing''. It is most important to analyze the mechanism by which these neural networks are adaptive with respect to external information that determines the learning outcome. It is based on the concept of
+recreating the behaviour of the single neuron of the human brain through an artificial model that connects each neuron with the next one through synapses. A synapse, as depicetd in figure \ref{fig:synapse}, is a link
+devoted to the trasmission of an electrical signal between neurons. When the impulse reaches the synapse's terminal, a stack of \emph{neurotrasmitters} are released. The synapses can learn from the stimolation
+given by the signal passing through. This dependence on history acts as a memory system mimicking human memory.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/2_deep_learning_and_grasping/synapse}
+    \caption{\textbf{Complex structure consisting of a neuron plus synapses.} On top: neuron elaborate electrical signals and pass informations to the axon; on bottom:
+    junctions called synapses send signals to other neurons.} 
+    \label{fig:synapse}
+\end{figure}
+Let's go back to artificial concept about the Neural Networks; given an input signal, this model produces an output processing influenced by an appropriate value called ``weight'' that is substancially a 
+threshold value for the inputs. All these ``neurons'' are connected together to quantify the value of the input so as to allow the entire network of preferential paths depending on the weight available.
+The most widely architectures used in practical applications are the ``Feedforward networks'', a simplest type of ANN in which the connections between nodes do not have  cycles or loops, so the data flow 
+through the network in a single direction (forward) starting from the input nodes to the output nodes. In case each neuron receives inputs from every neuron's output of the precedenting layer, the network is called
+\emph{multi-layers perceptron neural network}, i.e., MLP NN. The typical diagram of a ``MLP Feedforward neural network'' is shown in the figure \ref{fig:ann_structure}: on the left, the input is managed and prepared
+to be send to the neurons in the mixture; in the middle the part devoted to the actual processing of the data, called ``black box'' due to the hidden layer usually composed of thousands of neurons (with hundreds of
+thousands of interconnections); the final layer, visible on the right, has the function of adapting the results obtained from the processing of the network as output.  
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{figures/2_deep_learning_and_grasping/ann_structure}
+    \caption{\textbf{MLP Feedforward neural network structure.} On left: input layer that containing the input data; in the middle: the hidden part of the network devoted to processing
+    the data; on the right: the output layers as the adaptation of the results obtained.} 
+    \label{fig:ann_structure}
+\end{figure}
+
+\subsection{The Perceptron and the Delta Rule}\label{subsec:percdelta}
+The \emph{Perceptron} is an artificial model born with the intent to reproduce the typical behavior of biological neuron (which is still not completely clear). As depicted in figure \ref{fig:perceptron}, 
+this model is composed of three crucial elements such as: connecting links composed by a synaptic weights, a simple linear combiner in order to sum the input signals, and finally an activation function AF for the 
+attenuation of the amplitude of the output neuron. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.8]{figures/2_deep_learning_and_grasping/perceptron}
+    \caption{\textbf{The perceptron's structure.} Picture shows: in green, the synaptic weights refers to the strength of a connection between two nodes; in blue, a simple linear
+    combiner as the sum of the input signals; in red, the activation function (AF) as attenuator for the amplitude of the output neuron} 
+    \label{fig:perceptron}
+\end{figure}
+The output provided by the neuron is essentially a non-linear function of linear combinations of inputs and synaptic weights summed with an external threshold $\theta$ $\in$ 
+$\mathbb{R}$, also called \emph{bias}, as:
+\newline
+\begin{equation}
+y=\varphi \Bigg(\sum_{j=1}^{M} w_j x_j + \theta \Bigg)
+\label{eq:AF}
+\end{equation}
+\newline
+in case of an additional input $x_0$ such that $x_0=1$, the weight $w_0$ is equal to the bias $\theta$ and the equation \ref{eq:AF} becomes:   
+\newline
+\begin{equation}
+y=\varphi \Bigg(\sum_{j=0}^{M} w_j x_j \Bigg)
+\label{eq:AF2}
+\end{equation}
+\newline
+The activation function has biological characteristics, in particular if the sum of the weights, given an input stimulus, is greater than the bias then the output is high,
+otherwise it is low:
+\newline
+\begin{equation}
+\begin{align*}
+&\sum_{j=1}^{M} w_j x_j + w_0 \geq 0 \quad \text{then} \quad y=\text{high} \\
+&\sum_{j=1}^{M} w_j x_j + w_0 < 0 \quad \text{then} \quad y=\text{low}
+\end{align*}
+\label{eq:AF3}
+\end{equation}
+\newline
+This simple hard limiter, shown in figure \ref{fig:perceptron}, represents the biological behaviour of the cell potential as the output of the linear combiner:
+\newline
+\begin{equation}
+s = w^T x
+\label{eq:cell_pot}
+\end{equation}
+\newline
+with $w$ $\in$ $\mathbb{R}^{(M+1) \times 1}$, $x$ $\in$ $\mathbb{R}^{(M+1) \times 1}$ are the arrays defined as:
+\newline
+\begin{equation}
+\begin{align*}
+&x = [1 \quad x_1 \quad \cdots \quad x_M]^T \\
+&w = [w_0 \quad w_1 \quad \cdots \quad w_M]^T
+\end{align*}
+\label{eq:arrays}
+\end{equation}
+\newline
+Let us focus now on the procedure for updating the weights of the inputs to a MP neuron, the \emph{Delta-Rule}. This algorithm is a gradient descent learning rule, a fundamental
+part used in many learning approach of the neural networks. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.9]{figures/2_deep_learning_and_grasping/perceptron_delta_rule}
+    \caption{\textbf{GDR, Generalized Delta Rule.} A gradient descent learning rule applied to a MP neuron.} 
+    \label{fig:delta_rule}
+\end{figure}
+Let us consider the following adaption rule as:
+\newline
+\begin{equation}
+w_n = w_{n-1} + \frac{1}{2} \mu [- \nabla \hat{J}(w)]
+\label{eq:adaption_rule}
+\end{equation}
+\newline
+in which $\hat{J}(w) \hat{=} e[n]^2$ with $e[n]$ a priori error at time $n$ as $e[n] = d[n] - \varphi (w_{n-1}^T x[n])$. By exploiting the presence of the non-linear function we 
+can rewrite the formula of the gradient through the following mathematical steps: 
+\newline
+\begin{equation}
+\begin{align*}
+\nabla \hat{J}(w) &= \frac{\partial \hat{J}(w)}{\partial e} \cdot \frac{\partial e}{\partial s} \cdot \frac{\partial s}{\partial w_{n-1}} \\
+&= \frac{\partial e^2}{\partial e} \cdot \frac{\partial [d-\varphi (s)]}{\partial s} \cdot \frac{\partial (d - w_{n-1}^T x)}{\partial w_{n-1}} \\
+&= -2e \cdot \frac{\partial \varphi (s)}{\partial s} \cdot x
+\end{align*}
+\label{eq:gradient}
+\end{equation}
+\newline
+Once you have inserted the equation \ref{eq:gradient} inside the equation \ref{eq:adaption_rule} of the adaption rule, you obtain the final equation of the Generalized Delta Rule (GDR)
+for MP-neuron.
+
+\subsection{Supervised Learning}\label{subsec:supervlearning}
+Talking about \emph{Supervised learning} or \emph{Learning with a teacher}, we refer the machine learning task of learning a function that, given examples of correlations between input and output,
+performs a map. This paradigm of learning modifies the synaptic weights of a neural network by applying a set of data called \emph{training set}, called also \emph{training samples}. The whole learning
+procedure is performed until there is minimal variation between the synaptic weights. 
+\subsection{The Back-propagation learning algorithm}\label{subsec:backlearnalg}
+The back-propagation algorithm allows the correction of the error output $y$ as $e=d-y$, where $d$ is the desired signal. In this way the connection weigths inside the networks gradually adapt this error.
+The \emph{Cost Function}, also called \emph{Loss Function}, as the mean square difference between the desired and the network output is minimize by using a gradient search technique. For a training data set of
+pairs $[x_i,d_i]_{1}^{N_T}$, where $d_i$ is the desired output with respect the input pattern $x_i$, the cost function $J(w)$ is given as:
+\begin{equation}
+J(w)=\sum_{i=1}^{N_T} (d_i[n]-y_i[n])^2 = \sum_{i=1}^{N_T} e_{i}^2[n]
+\label{eq:cost_funct}
+\end{equation}
+The best training procedure is based on a wide range of examples, covering as many different cases as possible. This crucial step is performed over a fixed number of epochs due to the
+fact that few examples of training involve unwanted behaviour of the network. Let us see at mathematical level how the basic Back Propagation algorithm is derived. First of all we need 
+to extend the Generalized Delta Rule (GDR) for multilayer networks of multi perceptron neurons (MLP-NN) in a similar way to the equation \ref{eq:gradient}. Let us consider a training
+set composed by the following pairs: $d$ $\in$ $\mathbb{R}^{N_L \times 1}$, $x$ $\in$ $\mathbb{R}^{N_0 \times 1}$ for $n=1,2,...,N$. The weights are evaluated by minimizing a cost 
+function as the sum of squared errors and the recursive algorithm for adaptation rule follows the same steps starting to equation \ref{eq:adaption_rule}. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.9]{figures/2_deep_learning_and_grasping/neuron_hidden_layer}
+    \caption{\textbf{$k^{th}$ neuron of the $l^{th}$ hidden layer.} A schematic representation.} 
+    \label{fig:neuron_hidden_layer}
+\end{figure}
+Figure \ref{fig:neuron_hidden_layer} shows the representation of the $k^{th}$ neuron of the $l^{th}$ hidden layer. Considering the inputs in this draw, the derivative of the
+activation function is shown in equation \ref{eq:deriv_AF}; considering the weigths, the derivative of the linear-combination neuron output is shown in equation \ref{eq:linear_weights};
+considering the previous-layer inputs, the derivative of the linear combination neuron output is shown in equation \ref{eq:linear_previous}.
+\newline
+\begin{equation}
+\varphi'(s_{k}^{(l)}) = \frac{ \partial x_{k}^{(l)} }{ \partial s_{k}^{(l)} } = \frac{ \partial \varphi ( s_{k}^{(l)}) }{ \partial s_{k}^{(l)} }
+\label{eq:deriv_AF}
+\end{equation}
+\newline
+\newline
+\begin{equation}
+\frac{\partial(s_{k}^{(l)})}{\partial(w_{kj}^{(l)})} = \frac{\partial \bigg( \sum_{j=0}^{N_{l-1}} w_{kj}^{(l)}x_j^{l-1} \bigg)   }{ \partial w_{kj}^{(l)} } = x_{j}^{(l-1)}
+\label{eq:linear_weights}
+\end{equation}
+\newline
+\newline
+\begin{equation}
+\frac{\partial(s_{i}^{(l+1)})}{\partial(x_{k}^{(l)})} = \frac{\partial \bigg( \sum_{j=0}^{N_{l}} w_{ij}^{(l+1)}x_j^{l} \bigg)}{ \partial x_{k}^{(l)} } = w_{ik}^{(l+1)}
+\label{eq:linear_previous}
+\end{equation}
+\newline
+\newline
+Using the derivative chain rule for both equations \ref{eq:deriv_AF}, \ref{eq:linear_weights} we obtain:
+\newline
+\newline
+\begin{equation}
+\frac {\partial \varphi(s_{k}^{(l)})}{\partial w_{kj}^{(l)}} = \frac{ \partial \varphi (s_{k}^{(l)}) }{ \partial s_{k}^{(l)} } \cdot \frac{ \partial s_{k}^{(l)} }
+{ \partial w_{kj}^{(l)} } = \varphi'(s_{k}^{(l)}) \cdot x_{j}^{(l-1)}
+\label{eq:deriv_chain_rule_1}
+\end{equation}
+\newline
+\newline
+Using the derivative chain rule according to the output layer condition $y_k$ $\equiv$ $x_k^{L}$ $=$ $\varphi(s_k^{(L)})$ we have:
+\newline
+\begin{equation}
+\begin{align*}
+\frac {\partial \hat{J}(w)}{\partial w_{kj}^{(L)}} &= \frac{\partial }{\partial  w_{kj}^{(L)}} \Bigg [ \frac{1}{2} \sum_{k=1}^{N_{L}} (d_k - \varphi(s_k^{(L)}))^2 \Bigg ] \\
+&= (d_k - \varphi(s_k^{(L)})) \cdot \frac{\partial \varphi(s_k^{(L)})}{\partial w_{kj}^{(L)}} \\
+&= e_k \cdot \frac{\partial \varphi (s_k^{(L)})}{\partial s_k^{(L)}} \cdot \frac{\partial s_k^{(L)}}{\partial w_{kj}^{(L)}} \\
+&= e_k \cdot \varphi'(s_k^{(L)}) \cdot x_j^{(L-1)}
+\end{align*}
+\label{eq:deriv_weight}
+\end{equation}
+\newline
+\newline
+We must now extend the derivative calculation for all the weights, for the hidden layers, for the $k^{th}$ neuron of the $l^th$ hidden layer as:
+\newline
+\begin{equation}
+\begin{align*}
+\frac {\partial \hat{J}(w)}{\partial w_{kj}^{(l)}} &= \sum_{i=1}^{N_{l+1}} \frac{\partial \hat{J}(w) }{\partial s_{i}^{(l+1)}} \cdot \frac{\partial s_{i}^{l+1}}{\partial x_k^{(l)}}
+\cdot \frac{\partial x_k^{(l)}}{\partial s_k^{(l)}} \cdot \frac{\partial s_k^{(l)}}{\partial w_{kj}^{(l)}} \\
+&= \sum_{i=1}^{N_{l+1}} \frac{\partial \hat{J}(w) }{\partial s_{i}^{(l+1)}} \cdot w_{ik}^{(l+1)} \cdot \varphi'(s_k^{(l)})x_j^{(l-1)}
+\end{align*}
+\label{eq:extends_derive_calc}
+\end{equation}
+\newline
+This equation (\ref{eq:extends_derive_calc}) can be expressed in a form similar to equation \ref{eq:deriv_weight} as:
+\newline
+\begin{equation}
+\frac {\partial \hat{J}(w)}{\partial w_{kj}^{(l)}} = e_k^{(l)} \cdot \varphi'(s_k^{(l)}) \cdot x_j^{(l-1)}
+\label{eq:final_extends_deriv_calc}
+\end{equation}
+\newline
+in which a local gradient is defined as:
+\newline
+\begin{equation}
+\delta_i^{(l+1)} = \frac {\partial \hat{J}(w)}{\partial s_{i}^{(l+1)}}
+\label{eq:local_grad}
+\end{equation}
+\newline
+and a local error as:
+\newline
+\begin{equation}
+e_k^{(l)} = \sum_{i=1}^{N_{l+1}} \delta_i^{(l+1)} \cdot w_{ik}^{(l+1)}
+\label{eq:local_err}
+\end{equation}
+\newline
+Figure \ref{fig:BP_alg_MLP} shown the recursive backward phase as the recursion for each neuron and for each layer.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.9]{figures/2_deep_learning_and_grasping/BP_alg_MLP}
+    \caption{\textbf{Back-propagation algorithm.} A complete representation of algorithm's recursion for each neuron and layer of the network.} 
+    \label{fig:BP_alg_MLP}
+\end{figure}
+\newpage
+The development obtained until now defines the \emph{standard back-propagation algorithm}:
+\begin{algorithm}
+\caption{Back-Propagation Algorithm}\label{euclid}
+\begin{algorithmic}[1]
+\For{$l = L$, $L-1$, $\cdots$, $1$} 
+\For{$k=1$, $2$, $\cdots$, $N_l$}\\ \\
+$\quad$ $\qquad$ $ e_k^{(l)} =
+  \begin{cases}
+    (d_k - y_k)  & \quad \text{if } l \text{ = } L\\ \\
+    \sum_{i=1}^{N_{l+1}}w_{ik}^{(l+1)}\delta_i^{(l+1)}  & \quad \text{if } l \text{ $<$ } L
+  \end{cases}$\\ \\
+$\quad$ $\qquad$ $\delta_k^{(l)}=e_k^{(l)} \cdots \varphi'(s_k^{(l)})$ \\
+\For{$j=0$, $1$, $\cdots$, $N_{l-1}$} \\ \\
+$\quad$ $\quad$ $\qquad$ $w_{kj}^{(l)}[n]=w_{kj}^{(l)}[n-1]+\mu\cdot\delta_k^{(l)}\cdot x_j^{(l-1)}$ \\
+
+\EndFor
+\EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+\newpage
+\section{Convolutional Neural Networks: advanced explanation}\label{sec:cnn_advanced_explanation}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.5]{figures/2_deep_learning_and_grasping/cnn_structure}
+    \caption{\textbf{CNN layers.} A typical structure of a Convolutive Neural Network.} 
+    \label{fig:cnn_structure}
+\end{figure}
+As mentioned in the introduction, the Convolutional Neural Neworks (CNNs) are multi-level neural networks, similar to the MultiLayer Perceptron, but with a structure made of very particular convolutive layers,
+as depicted in figure \ref{fig:cnn_structure}). Supposing have an input image of size 32x32x3, a filter of size 5x5x3 (the depth size of the filter must always extends the depth of
+the input) performs a convolution by sliding over the image and computing dot products, as depicted in figure \ref{fig:filter}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/2_deep_learning_and_grasping/filter}
+    \caption{\textbf{A convolutive filter.} The filter performs a convolution on the image as a dot products stored inside a features' map.} 
+    \label{fig:filter}
+\end{figure}
+The result between this filter and a small chunk of the image in this case will be exactly:
+\begin{equation}
+w^T x + b
+\end{equation}
+
+in this example, 75-dimensional dot-product + bias. After sliding the filter over all the image's locations an output array of 28 x 28 x 1 is created. This vector's dimension came from the 784 different
+locations that a 5 x 5 filter can fit on a 32 x 32 input image and corresponding to an activation map, also called feature map. The purpose of this layer is to introduce non-linearity to a system that 
+basically has just been computing linear operations during the convolutional layers. Figure \ref{fig:activ_map} shows a typical example of output coming from 6
+filters of 5x5 size, in particular, 6 separate activation maps are interpreted by the network as a sort of new image of 28x28x6 channels size.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/2_deep_learning_and_grasping/activ_map}
+    \caption{\textbf{Activation maps.} The shape of an activation map is related to the number of the filters used.} 
+    \label{fig:activ_map}
+\end{figure}
+The following formula is used to determine the size of an activation map:
+\begin{equation}
+(N + 2P - F)/S+1
+\end{equation}
+where N is the dimension of the input image; F the size of the filter; P the padding and S the stride. Padding's parameters manage the filter's size constraint in order to allows different kernel size on the
+image without occur in typically dimensionality errors. Instead, the Stride's parameters controls how the filter convolves around the input volume, in particular it reduces the size of the next network's layer
+and allows to decide how much overlap you want between two output values in a layer. CNNs have different types of activation functions just as the figure \ref{fig:activ_func} shows. In the past, non-linear
+functions like \emph{Sigmoid} and \emph{Tanh} were used. The \emph{Sigmoid} function is a differentiable function defined in the range between 0 and 1. It is possible to find the slope of the sigmoid curve at any 
+two points and its curve looks like a S-shape (figure \ref{fig:activ_func}); the \emph{Tanh} function, also called \emph{hyperbolic tangent} function, is also like logistic sigmoid but in this case it lies on 
+the range from -1 to 1. Also in this case, this function is differentiable and is often used in classification tasks between two classes. However, with the progression of the technology it has been discovered that
+networks with \emph{ReLU} activation function, i.e., rectified linear unit function, work far better due to the ability to train a lot faster without making a significant difference to the accuracy. This activation
+layer increases the non-linearity inside the model by applying the function $f(x) = max(0, x)$, with a range from 0 to infinity, to all of the input values. In this way all the negative activations will be assigned 
+to 0.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/2_deep_learning_and_grasping/activ_func}
+    \caption{\textbf{Activation function.} Pictures shows 6 of the common used activation function like.} 
+    \label{fig:activ_func}
+\end{figure}
+After some activation layers, a pooling layer is typically applied. In case of \emph{max pooling}, this layer takes a filter and a stride of the same length and applies it to the input volume and outputs the 
+maximum number in every convoluted filter regions. Sometimes is convenient to apply an average pooling instead of max pooling (this layer is used on recent architectures in place of \emph{Fully Connected} layers), 
+in this case the output depends on each input, as depicted in figure \ref{fig:max_avg_pool}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/2_deep_learning_and_grasping/max_avg_pooling}
+    \caption{\textbf{Pooling layer.} 2 kind of pooling are possible: On top, the result after performs a max pooling on the image; on bottom, the results after performs an average pooling
+    on the image.} 
+    \label{fig:max_avg_pool}
+\end{figure}
+
+As mentioned before, the \emph{Fully Connected} layers contains neuron that connect to the entire input volume (as in ordinary neural networks) in which the activation function can be computed as a matrix
+multiplication followed by a bias offset.  
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/2_deep_learning_and_grasping/entire_layers}
+    \caption{\textbf{Features inside the layers.} An example of the output detection in the point of view of the CNN.} 
+    \label{fig:entire_layers}
+\end{figure}
+
+\subsection{Frameworks involved: Caffe, Tensorflow}\label{subsec:caffe_tensorflow}
+In this paragraph two of the most common frameworks used in deep learning are illustrated: CAFFE \cite{caffe} and Tensorflow. CAFFE, i.e., convolutional architecture for fast feature embedding, has been developed
+by the Berkeley Vision and Learning Center (BVLC) as a BSD-licensed C++ library with Python and MATLAB bindings for training and deploying general purpose convolutional neural networks. It allows the use of 
+CUDA GPU computation, i.e., compute unified device architecture, in order to processing over million images a day, reason for which CAFFE fits industry and internet-scale media. \emph{CUDA} is a recent technology supplied by \emph{NVIDIA} that allows the use of Nvidia graphics cards for parallel computing (figure \ref{fig:cuda_vga}). The \emph{GPU} is then used to process code instructions, especially a large number of
+cores, i.e., Cuda core, are made available to increase the parallelization process in order to optimize computational cost. Anyone wishing to take advantage of this resource must have at least one Nvidia
+video card equipped with GPUs that meets certain requirements that generally differ from the type of hardware architecture of the card itself, the higher the cost and quality of the video card on the market 
+and the more cores will be available for optimization.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/2_deep_learning_and_grasping/cuda_vga}
+    \caption{\textbf{CUDA.} Parallel computing platform and programming model developed by NVIDIA for general computing on graphical processing units (GPUs)} 
+    \label{fig:cuda_vga}
+\end{figure}
+Although the first available programming languages were written in C and without recursion or memory
+pointers, Nvidia has been able to extend his software with the most updated languages including: \emph{C++, Python, Java}; this new scenario has literally made GPUs real open architectures, CPUs are able to offer
+enormous performance to all applications compatible with it, an example is the library \emph{CUDNN} (figure \ref{fig:cudnn_lib}), i.e., CUDA Deep Neural Network library, composed by a series
+of primitives for deep neural networks for standard routines such as normalization, forward and backward convolution, activation layers, pooling and so on.  
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/2_deep_learning_and_grasping/cudnn}
+    \caption{\textbf{Cuddn library.} A CUDA library of primitives for deep neural networks provided by Nvidia.} 
+    \label{fig:cudnn_lib}
+\end{figure}
+About TensorFlow, it was developed by the Google Brain team for internal Google use and it was released under the Apache 2.0 open source license on November 9, 2015. TensorFlow provides official Python and C API and also
+without API stability guarantee: C++, Go and Java. Like CAFFE, it can also run on multiple GPU supporting the CUDA technology. In addition, there is a python deep learning library called Keras that can run 
+on top of TensorFlow to perform quick experimentation in a simple way.
+
+\section{A Noteworthy Example: YOLO Real Time Object Detection}\label{sec:yolo}
+YOLO (You Only Look Once) \cite{yolo_paper} is an extremely fast CNN objects detector, as depicted in figure \ref{fig:yolo_output}. Unlike a neural network that predicts bounding boxes and class probabilities
+directly from the entire image into a single evaluation, YOLO detects objects as a regression problem to spatially separated bounding boxes and corresponding class probabilities. Since the image processing is
+simple and straightforward this network can be trained directly on the complete images.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.38]{figures/2_deep_learning_and_grasping/yolo_output}
+    \caption{\textbf{YOLO output results.} the prediction of YOLO on sample artwork and natural images from the internet.} 
+    \label{fig:yolo_output}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/2_deep_learning_and_grasping/yolo_architecture}
+    \caption{\textbf{YOLO's architecture.}} 
+    \label{fig:yolo_arc}
+\end{figure}
+The complete structure of the network is shown in figure \ref{fig:yolo_arc}. YOLO has 24 convolutional layers followed by 2 fully connected layers. Alternating 1 $\times$ 1 convolutional layers reduce the 
+features space from precedenting layers. The activation function (AF), illustrated in the previous section, is linear for the last layer. All other layers use the following leaky rectified linear activation as:
+\newline
+\begin{equation} 
+\phi(x)=
+\begin{align*}
+\begin{cases}
+    x  & \quad \text{if } x \text{ $>$ } 0\\ 
+    0.1x  & \quad \text{otherwise }
+  \end{cases}
+\end{align*}
+\label{eq:AFYOLO}
+\end{equation}
+\newline
+and the multi-part loss function using during the train is of the form:
+\newline
+\begin{equation}
+\begin{align*}
+loss &= \lambda_{coord} \sum_{i=0}^{S^2} \sum_{j=0}^{B} \mathfrak{1}_{ij}^{obj}\big[\big(x_i - \hat{x_i}\big)^2 + \big(y_i - \hat{y_i}\big)^2\big] \\
+&+ \lambda_{coord} \sum_{i=0}^{S^2} \sum_{j=0}^{B} \mathfrak{1}_{ij}^{obj}\bigg[\bigg(\sqrt{w_i} - \sqrt{\hat{w_i}}\bigg)^2 + \bigg(\sqrt{h_i} - \sqrt{\hat{h_i}}\bigg)^2 \bigg] \\
+&+ \sum_{i=0}^{S^2} \sum_{j=0}^{B} \mathfrak{1}_{ij}^{obj} \Big(C_i - \hat{C_i}\Big)^2 \\
+&+ \lambda_{noobj} \sum_{i=0}^{S^2} \sum_{j=0}^{B} \mathfrak{1}_{ij}^{noobj} \Big(C_i - \hat{C_i}\Big)^2 \\
+&+ \sum_{i=0}^{S^2} \mathfrak{1}_{ij}^{obj} \sum_{c \in classes}^{}  \big(p_i(c) - \hat{p_i}(c)\big)^2 
+\end{align*}
+\label{eq:lossYOLO}
+\end{equation}
+\newline
+where $\mathfrak{1}_{i}^{obj}$ denotes if the object appears in grid cell $i$ and $\mathfrak{1}_{ij}^{obj}$ denotes that the responsible for that prediction is the $j$th bounding box predictor in grid cell $i$.
+
+Let us see the steps necessary to understand how YOLO predicts the output bounding boxes starting from the input image. The first step splits the input image into an S x S grid in which each cell predicts $B$ 
+bounding boxes and a scores corresponding to how confident the model is about the box contain also how accurate the box is, as depicted on the top image on figure 
+\ref{fig:yolo_model}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/2_deep_learning_and_grasping/yolo_model}
+    \caption{\textbf{YOLO model.} YOLO splits the image into an 13 x 13 grid and for each grid cell predicts B bounding boxes, confidence for those boxes, and C class probabilities.} 
+    \label{fig:yolo_model}
+\end{figure}
+These scores are called \emph{confidence scores} and are evaluated as:
+\newline
+\begin{equation}
+Pr(Object)\cdot IOU_{pred}^{truth}
+\label{eq:confidence_scores}
+\end{equation}
+\newline
+Intersection over Union (IOU) is a metric evaluation used to measure the accuracy of an object detector on a particular dataset (any algorithm that provides predicted bounding boxes as output can be evaluated
+using this evaluation). From the equation \ref{eq:confidence_scores} it is clear that for all objects inside the cell the score will be the IOU between the predicted box and the ground truth; in case there are 
+no objects in that cell, the result will be zero. Five prediction values like $x,y,w,h$ and the confidence make up each bounding box. The $x,y$ coordinates represent the center of the box relative to the bounds
+of the grid cell (at difference of the $w,h$ coordinates that are predicted relative to the entire image). The value of the confidence is relative to the IOU between the predicted box with respect any ground
+truth box.
+The bottom image in figure \ref{fig:yolo_model} shows the \emph{Class probability map}, in particular each grid cell predicts $C$ conditional class probabilities $Pr(Class_i | Object)$ influenced by the presence 
+of an object. Both confidence scores and C class probabilities are encoded as an $S \times S \times (B \cdot 5 + C)$ tensor, with the result of a class-specific confidence scores for each box as:
+\newline
+\begin{equation}
+Pr(Class_i | Object) \cdot Pr(Object)\cdot IOU_{pred}^{truth} = Pr(Class_i) \cdot IOU_{pred}^{truth}
+\label{eq:final_detection}
+\end{equation}
+\newline
+Taking as a reference the statement in \cite{yolo_paper}: \emph{``YOLO predicts multiple
+bounding boxes per grid cell. At training time we only want one bounding box predictor to be responsible for each object. We assign one predictor to be ``responsible'' for predicting an object based on which
+prediction has the highest current IOU with the ground truth''}; we start by analyzing in detail the loss function \ref{eq:lossYOLO}:
+\begin{equation}
+\lambda_{coord} \sum_{i=0}^{S^2} \sum_{j=0}^{B} \mathfrak{1}_{ij}^{obj}\big[\big(x_i - \hat{x_i}\big)^2 + \big(y_i - \hat{y_i}\big)^2\big]
+\label{eq:row1Yolo}
+\end{equation}
+This expression (\ref{eq:row1Yolo}) is related to the center of the bounding box position in which $(x,y)$ are the predicted bounding box position and $(\hat{x},\hat{y})$ are the actual position from the ground truth
+data. The term $\mathfrak{1}_{ij}^{obj}$ denotes that the $j^{th}$ bounding box predictor in cell $i$ is responsible for that prediction, in other words, it will be equal to 1 if exist an object in cell $i$ and the 
+confidence of the $j^{th}$ predictors of this cell is the highest among all the predictors of this cell; his dual term, $\mathfrak{1}_{ij}^{noobj}$, will be 1 in case of no objects in cell $i$. 
+\begin{equation}
+\lambda_{coord} \sum_{i=0}^{S^2} \sum_{j=0}^{B} \mathfrak{1}_{ij}^{obj}\bigg[\bigg(\sqrt{w_i} - \sqrt{\hat{w_i}}\bigg)^2 + \bigg(\sqrt{h_i} - \sqrt{\hat{h_i}}\bigg)^2 \bigg]
+\label{eq:row2Yolo}
+\end{equation}
+This portion of loss (\ref{eq:row2Yolo}) is related to the predicted bounding box width/height in which small deviations in large boxes matter less than in a small boxes. 
+\begin{equation}
+\sum_{i=0}^{S^2} \sum_{j=0}^{B} \mathfrak{1}_{ij}^{obj} \Big(C_i - \hat{C_i}\Big)^2 + \lambda_{noobj} \sum_{i=0}^{S^2} \sum_{j=0}^{B} \mathfrak{1}_{ij}^{noobj} \Big(C_i - \hat{C_i}\Big)^2 
+\label{eq:row3Yolo}
+\end{equation}
+YOLO computes also the confidence score for each bounding box predictor. As depicted in equation \ref{eq:row3Yolo}, we can find the confidence score $C$ and the IOU of the predicted bounding box with the ground truth
+$\hat{C}$. This part of loss is switched in function of the presence of the object in the ground truth, in particular,  if the object exists in the ground truth, than $\hat{C}$ will be equal to 1, otherwise will be 
+assigned to 0.
+\begin{equation}
+\sum_{i=0}^{S^2} \mathfrak{1}_{ij}^{obj} \sum_{c \in classes}^{}  \big(p_i(c) - \hat{p_i}(c)\big)^2 
+\label{eq:row4Yolo}
+\end{equation}
+Expression \ref{eq:row4Yolo} is equivalent to a normal sum-squared error for classification. The only difference is given by the presence of the term $\mathfrak{1}_{ij}^{obj}$ that assumes the value 1 in the case of
+an object inside the cell $i$, 0 otherwise. This choice avoids penalizing classification errors when there are no objects in the cell. 
+
