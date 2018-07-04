@@ -36,8 +36,7 @@ bad case in which the prediction regards only the not admissible grasping points
 
 \section{Results}\label{sec:environment_setup}
 From the results we will see that, once trained, the network will be able to predict a distribution of grasping points within the image. A clear example is shown in figure 
-\ref{fig:distrib}. In fact, for each grid the network will prefer certain points with a specific confidence score between 0 and 1, the higher the score and the more the point will be
-the candidate for grasping object (obviously, where the confidence will be low, it is assumed that there are no objects in that region of image pixels). This confidence distribution
+\ref{fig:distrib}. In fact, for each grid the network will extract a specific point with a predicted confidence score between 0 and 1, the higher the score and the more the point will be the candidate for grasping an object (obviously, where the confidence will be low, it is assumed that there are no objects in that region of image pixels). This confidence distribution
 implies that, in addition to the maximum confidence candidate point, i.e., the best grasping point according to the network, there will be other points with very high confidence that
 can be classified as grasping points. For this reason, the experiments will be evaluated on two different points of view: the first on the basis of all scenarios with maximum 
 confidence score; the second analyzing the first 4 highest points of confidence in the overall confidence's distribution.
@@ -184,5 +183,6 @@ object.
 to do...
 
 \end{itemize}
+
 
 
