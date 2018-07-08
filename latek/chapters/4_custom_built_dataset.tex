@@ -1,0 +1,193 @@
+\chapter{Custom built dataset}\label{ch:custom_dataset}
+In this section all the parts related to the dataset and its acquisition software will be exposed. Dataset's acquisition includes a large part of this thesis' work. The software
+developed must take into account many factors such as security, reliability, ductility and so on; these components are strictly necessary as the dataset must be robust to any false 
+positives that could compromise the overall quality.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.42]{figures/4_custom_built_dataset/robot_attempt}
+    \caption{\textbf{Dataset acquisition example.} The robot in an attempt to grasp objects while acquiring the dataset.} 
+    \label{fig:acquisition_foto}
+\end{figure}
+In addition, the robot must not cause damage to the surrounding  environment, to himself and obviously to people. A curiosly 
+interest in the matter, it is good remember the three Asimov's laws of robotics, i.e., the set of rules devised by the science fiction author Isaac Asimov, \cite{asimov}:
+\begin{itemize}
+ \item \textbf{I)} \emph{A robot may not injure a human being or, through inaction, allow a human being to come to harm.}
+ \item \textbf{II)} \emph{A robot must obey the orders given it by human beings except where such orders would conflict with the First Law.}
+ \item \textbf{III)} \emph{A robot must protect its own existence as long as such protection does not conflict with the First or Second Laws.}
+\end{itemize}
+
+\section{150 hours of try and test}\label{sec:hours_try_test}
+It was decided to create a completely autonomous acquisition software able to operate inside the Rococo laboratory. (DIAG, Sapienza) for hours and hours without the help of human
+presence. To be precise, 4000 different scenarios were acquired, for a total of 150 hours. 
+\subsection{Dataset setup}\label{subsec:dataset_setup}
+In this subsection the setup of the acquisition environment will be explained in detail. The setup consists in a custom built cell with an RGB-D sensor statically mounted on a top
+cell rod and an anthropomorphic manipulator inside. Hence, we will see the calibration and the relationship between the camera and the robot. To conclude this subsection, the working
+area with all the objects that make up the dataset acquired will be also exposed. 
+\subsubsection{5.1.1.1$\quad$The robot cell}\label{subsubsec:the_robot_cell}
+The robot used for this project of thesis is a 6 d.o.f. antropomorphic manipulator, in particular, the robot cell is shows in figure \ref{fig:robot_cell}. This manipulator and its own
+control system have been provided by Robox, by the way, the controller allows us to interface the robot with our acquisition software via serial communication so we were able to send 
+the target poses and also manage all the information about the robot's status.  
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/4_custom_built_dataset/robot}
+    \caption{\textbf{Kinect2 external parameters calibration.} The sensor localizer calibration algorithm. The figure shows the three axes that represent the origin of the board reference
+    system. In blue, the markers' id located by the camera.} 
+    \label{fig:robot_cell}
+\end{figure}
+\subsubsection{5.1.1.2$\quad$The RGB-D camera}\label{subsec:dataset_setup}
+The rgb-depth images were acquired through the {Microsoft Kinect v2} sensor (Figure \ref{fig:kinect2}), a device belonging to the family of Structured Light sensors described in Chapter \ref{ch:robotgrasping}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/4_custom_built_dataset/kinect_v2}
+    \caption{\textbf{The Microsoft Kinect v2 sensor.}} 
+    \label{fig:kinect2}
+\end{figure}
+Like its predecessor, alias the \emph{Microsoft Kinect v1}, this device is based on the issuance of a divergent dense pattern as a pseudo-random dot matrix pattern. Table \ref{tab:kin_2} shows the technical features
+of Kinect v2.
+\begin{table}[H]
+ \centering
+
+   \begin{tabular}{ llllllll }
+   $\quad\quad\quad\quad\quad\quad\quad\quad$\textbf{Microsoft Kinect v2 technical features.} \\
+   \cmidrule(lr){2-6} \cmidrule(lr){7-8}
+   \cmidrule(lr){1-8}   
+   \textbf{Infrared (IR) camera resolution} $\quad\quad\quad\quad\quad\quad$512 x 424 pixels\\
+   \textbf{RGB camera resolution} $\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad$1920 x 1080 pixels\\
+   \textbf{Field of view} $\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad$70 x 60 degrees \\
+   \textbf{Framerate} $\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad$30 frames per second\\
+   \textbf{Operative measuring range} $\quad\quad\quad\quad\quad\quad\quad\quad$from 0.5 to 4.5 m\\
+   \textbf{Object pixel size (GSD)} $\quad\quad\quad\quad\quad$1.4 mm(0.5 m range)-12 mm(4.5 m range)
+%   \vspace{0.025cm} \\
+%   \cline{1-8} \\
+   \end{tabular} 
+   \caption{\textbf{Technical features of Kinect v2 sensor}}
+   \label{tab:kin_2}
+\end{table}
+Three output streams arise from the two lenses of the Kinect v2 device: IR data and depth-maps come from one lens and have the same resolution. The 2D depth-maps include 16 bits encoded in which measurement information is 
+stored for each pixel. The color images come from the second lens while the point cloud is calculated due to the depthmap.
+
+\subsubsection{5.1.1.3$\quad$Calibration}\label{subsubsec:calibration}
+The camera has been calibrated using a calibration pattern. As depicted in figure \ref{fig:sens_loc}, the rigid board is composed by a series of black and white marker pattern 
+that allows us to retrieve the external parameters of the camera w.r.t. the board reference system.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/4_custom_built_dataset/sensor_localizer}
+    \caption{\textbf{Kinect2 external parameters calibration.} The sensor localizer calibration algorithm. The figure shows the three axes that represent the origin of the board reference
+    system. In blue, the markers' id located by the camera.} 
+    \label{fig:sens_loc}
+\end{figure}
+Once the external parameters of the Kinect2 have been obtained, we can proceed to the Hand-eye calibration. In this kind of calibration (useful in many cases as for example, grasping
+objects or reconstructing 3D scenes) the unknown transformation from the robot coordinate system to the calibration pattern coordinate system as well as the transformation from 
+the camera to the hand coordinate system need to be estimated simultaneously, in our case, by applying the transformation of the target pose in Kinect2 image coordinates
+to a target pose in the base robot frame. In particular, given the static transformation between the Kinect2 frame w.r.t. the board frame and given the static transformation
+between the board w.r.t. the robot base, the target pose in the base robot frame is given by this sequence of transformations:
+\newline
+\begin{equation}
+p_{w} = ^{obj}T_k \cdot ^kT_b \cdot ^bT_w \cdot p_k
+\label{eq:3dWorldPoint}
+\end{equation}
+\newline
+$p_w$ is the target gripper pose in the robot frame, $^{obj}T_k$ is the transformation between the object w.r.t. the Kinect2 frame, $^kT_b$ is the transformation between the Kinect2 w.r.t. the board, $^bT_w$ is the
+transformation between the board w.r.t. the base robot frame and $p_k$ is the target point in the Kinect2 image frame.
+
+\subsubsection{5.1.1.4$\quad$Objects and working area}\label{subsubsec:objs_work_area}
+For the acquisition of the dataset, a set of everyday objects is used, covering a broad range of sizes, shapes, and frictional coefficients, as shown in figure \ref{fig:dataset_objs}. Experiments were then 
+conducted by placing each object at random positions and orientations within a graspable area of the board upon which the robot was mounted.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.06]{figures/4_custom_built_dataset/dataset_objs}
+    \caption{\textbf{Dataset's objects.} The set of everyday objects used on the dataset's creation in real-world grasping with a robot arm.} 
+    \label{fig:dataset_objs}
+\end{figure}
+\section{Acquisition protocol}\label{sec:acquisition_protocol}
+To execute the dataset's acquisition, a series of attempting to grasp objects have been performed. First of all, a random point was chosen within a region proposal. This possible candidate point must be analized
+with a check security on the depth-map to avoid collision with the environment and objects. In the final step, after the depth convalidation, the kinematic controls are sent for this target point allowing the robot
+to perform the attempt of grasping. In the end the dataset is updated and the grasp is be counted as successful if an object is be lifted off the board to a height of 30cm, 
+
+\subsection{Region proposal}\label{subsec:region_proposal}
+During the acquisition of the dataset it is necessary to know how to manage the ratio of objects grasped or not expecially for drive the CNN's training into the correct behaviour. Considering the limitations of
+using only one robot instead simulations or parallel robots, a good compromise could be to achieve a successful scenario of grasping for every five failed attempts by using a region proposal in the acquired image
+related to all the objects in the scene, i.e., all the possible candidate objects to be grasped. An example of region proposal is shown in figure \ref{fig:reg_prop}. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/4_custom_built_dataset/region_proposal}
+    \caption{\textbf{Region Proposal example.} An example of Region Proposal output after processing the bounding boxes from YOLO detection.} 
+    \label{fig:reg_prop}
+\end{figure}
+This process is realized using the YOLO neural network, described in detail in section \ref{sec:yolo}, which is agnostic with respect to the objects used for
+this project as it is trained with a dataset containing industrial objects \cite{flexsightThesis}. To obtain a good region proposal, the YOLO detection threshold has been changed to 
+5$\%$. Figure \ref{fig:yolo_thresh} shows an example of 2 different threshold outputs: by default (a), YOLO only displays objects detected with a confidence of 0.25 or higher), in 
+case (b) the accuracy of the threshold has been set to 0$\%$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{figures/4_custom_built_dataset/yolo_thresh}
+    \caption{\textbf{YOLO threshold cases:} In (a), YOLO detect objects with confidence of 80$\%$; in (b), YOLO display all detection with confidence set to 0$\%$.} 
+    \label{fig:yolo_thresh}
+\end{figure}
+
+\subsection{Safe depth point}\label{subsec:safe_depth_point}
+This step allows the robot to perform a grasping attempt in total safety, avoiding collisions with objects or structure in which the robot is mounted because RGB-D sensors like Kinect2
+are not efficient in terms of depth measurements with particular materials such as glass, transparent plastic, reflective metals or  black color objects. the \emph{src} folder of the 
+\emph{LM Grasping software} contains the \emph{imageProcessing.cpp} file which in turn contains the \emph{checkDepthIsSafe} method. This method is basically based to performs a check
+on a 5x5 grid equal to the number of the pixels close to the candidate point. If the measurement is within the threshold of the average of its adjacent pixels and there are less 
+then 5 ``nan'' points, i.e., all that points with 0 mm of depth value given by bad measurement, then the depth is consistent with the observation and the candidate point is chosen as 
+valid for the grasping attempt. 
+
+\section{Dataset structure}\label{sec:dataset_structure}
+The dataset acquired has a folder structure for each grasping scenario. In particular, each folder contains within it:
+\begin{itemize}
+ \item \textbf{rgb$\_$NoReg$\_$image}: The not registered rgb image in png format acquired by the Kinect2 with a resolution of 1920 x 1080 pixels, shown in figure \ref{fig:noRegRgb}. The different resolution w.r.t.
+ the depth image and also the fact that it is not registered does not allow a direct mapping between each rgb pixel and depth pixels.
+ \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.17]{figures/4_custom_built_dataset/rgb_NoReg_image}
+    \caption{\textbf{Not registered RGB image.}} 
+    \label{fig:noRegRgb}
+\end{figure}
+ \item \textbf{depth$\_$NoReg$\_$image}: The not registered depth image in png format acquired by the Kinect2 with a resolution of 512 x 424 pixels, shown in figure \ref{fig:noRegDepth}. In this case the 4 channels of
+ the png format preserve the numerical information of the depthMap acquired.
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{figures/4_custom_built_dataset/depth_NoReg_image}
+    \caption{\textbf{Not registered depth image.}} 
+    \label{fig:noRegDepth}
+\end{figure}
+ \item \textbf{rgb$\_$image}: The registered rgb image in png format acquired by the Kinect2 with a resolution of 512 x 424 pixels, shown in figure \ref{fig:regRgb}. In this way a direct mapping between rgb and 
+ depth pixel by pixel is given because both dimensions of rgb and depth images coincide.
+   \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{figures/4_custom_built_dataset/rgb_image}
+    \caption{\textbf{Registered RGB image.}} 
+    \label{fig:regRgb}
+\end{figure}
+ \item \textbf{depth$\_$image}: The registered depth image in png format acquired by the Kinect2 with a resolution of 512 x 424 pixels (direct mapping between rgb and depth pixel by pixel is given), shown in
+ figure \ref{fig:regDepth}. Also in this case, the 4 channels of the png format preserve the numerical information of the depthMap acquired.
+    \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{figures/4_custom_built_dataset/depth_image}
+    \caption{\textbf{Registered depth image.}} 
+    \label{fig:regDepth}
+\end{figure}
+ \item \textbf{debug}: A debugging image in png format with a resolution of 1920 x 1080 pixels, shown in figure \ref{fig:debugImage}. This image will not affect the CNN's training but it is very useful for debugging
+ information during acquisition of the dataset as the region proposal (in black and white) and the target pose (in red) for that specific task. 
+  \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.17]{figures/4_custom_built_dataset/debug}
+    \caption{\textbf{Debug image example.} Pictures shows an example of debug image useful to understand where the robot has attempt to grasped.} 
+    \label{fig:debugImage}
+\end{figure}
+ \item \textbf{data}: A txt file containing all the grasping information such as the target pose in the various frames, the depth value, the pitch and roll orientations target for the gripper and the binary information
+ inherent to the grasping success. 
+  \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/4_custom_built_dataset/datasetFile}
+    \caption{\textbf{Data values.} The information about the point coordinates, orientation and success or not of grasping. In (a) are reported the 3 float values relative to the x,y,z coordinates of the target pose in the base robot frame; in (b) are reported the 2 int 
+ values relative to the x,y  coordinates of the registered rgb target pose in the kinect2 frame;  in (c) are reported the 2 int values relative to the x,y  coordinates of the not registered rgb target pose in the
+ kinect2 frame; in (d) is reported the float value of the depth directly from the kinect2 sensor; in (e) are reported the 2 float values relative to the pitch and roll angles for the target gripper orientation; in
+ (f) is reported the boolean value relative to the success or not of the grasping for that target pose.} 
+    \label{fig:dataFile}
+\end{figure}
+ The figure \ref{fig:dataFile} shows an example of a data.txt file: in (a) are reported the 3 float values relative to the x,y,z coordinates of the target pose in the base robot frame; in (b) are reported the 2 int 
+ values relative to the x,y  coordinates of the registered rgb target pose in the kinect2 frame;  in (c) are reported the 2 int values relative to the x,y  coordinates of the not registered rgb target pose in the
+ kinect2 frame; in (d) is reported the float value of the depth directly from the kinect2 sensor; in (e) are reported the 2 float values relative to the pitch and roll angles for the target gripper orientation; in
+ (f) is reported the boolean value relative to the success or not of the grasping for that target pose. 
