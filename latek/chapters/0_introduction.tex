@@ -1,16 +1,13 @@
 \chapter{Introduction}\label{ch:intro}
-Grasping objects is a complex task that humans learn starting from the first years of life. When robots will be able to learn to grasp objects with the same ease, we may talk about a new industrial revolution, with strong impacts in several areas such as freight transport, rescue operations, medical and welfare. Actually robot grasping is not a solved problem. Standard approaches are based on designing a set of graping functions that depends on the current object position. Recent studies focused on learning the best pose of grasping from images containing objects. These methods have encountered many accuracy problems due to the difficulty of automatically learning the correct behavior in different scenarios. For example, objects can be in challenging positions for grasping. In addition, factors such as incorrect calibration between the camera and robot, joint encoders, radial distortion and other causes, negatively affect the grasping task. \\
-Recently, deep learning has become a reference point for many studies and research also in the grasping context. Starting from existing CNNs and related papers we worked intensively on the concept of estimation of
-the best pose for grasping objects. We have optimized fundamental aspects such as acquisition setups, custom CNN builded and a new loss function optimized for this project, all indispensable resources that have
-made this project possible.
+Grasping objects is a complex task that humans learn starting from the first years of life. When robots will be able to learn to grasp objects with the same ease, we may talk about a new industrial revolution, with strong impacts in several areas such as freight transport, rescue operations, medical and welfare. Actually robot grasping is not a solved problem. Standard approaches are based on designing a set of graping functions that depends on the current object position. Recent studies focused on learning the best pose of grasping from images containing objects. These methods have encountered many accuracy problems due to the difficulty of automatically learn the correct behavior in different scenarios. For example, objects can be in challenging positions for grasping. In addition, factors such as incorrect calibration between the camera and robot, joint encoders, radial distortion and other causes, negatively affect the grasping task. \\
+
+Recently, deep learning has become a reference point for many studies and research also in the grasping context. In this thesis, we face the grasping problem of unknown objects by proposing an unsupervised learning approach that leverages recent advances on CNNs. In particular, we focus on several aspects such a the acquisition of a suitable training dataset, the design of a custom CNN and the design of a new loss function optimized for this task.
 
 \section{Problem Statement and Motivations }\label{sec:motivations}
-Robot grasping is closely related to a problem of vision perception because the robot must identify the region in the space in which the gripper will have to grasp the object. The success of a common grasping task
-depends from the accuracy of the calibration between the camera sensor and the robotic arm, and also from all the forces applied to the gripper and the robot joints.
-Grasping task is then split as a problem related to two essential components:
+Robot grasping is closely related to a problem of vision perception since the robot must identify the region in the space in which the gripper will have to grasp the object. The success of a grasping task depends, among others, on the accuracy of the estimated object position, on the quality of the calibration between the camera sensor and the robotic arm, and also on the designed grasping function (i.e., the function that provides the actual grasping position). The grasping task can be split as a problem related to two essential components:
 \begin{itemize}
- \item \textbf{The eye of the robot}: we are talking about the part related to the computer vision, indispensable for the understanding the surrounding environment and localization of objects.
- \item \textbf{The arm with the hand of the robot}: we are talking about robot's parts related to mechanical, structure, joints, controller, end effector grippers and so on; all the components related to physical
+ \item \textbf{The eye of the robot}: we are talking about the part related to the computer vision, indispensable for the understanding the surrounding environment and the localization of objects.
+  \item \textbf{The arm with the hand (i.e., the \textit{gripper}) of the robot}: we are talking about robot's parts related to mechanical, structure, joints, controller, end effector grippers and so on; all the components related to physical
  object grasping. 
 \end{itemize}
 \begin{figure}[H]
@@ -25,7 +22,7 @@ orientation in which the object has been located.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/1_robot_grasping_with_antropomorphic_robots/d2co}
-    \caption{\textbf{Matching CAD model example.} An example of matching between a CAD models and objects.} 
+    \caption{\textbf{Matching CAD model example.} An example of matching between a CAD models and objects: (left) initial guess extraction; (right) positions refinement.} 
     \label{fig:d2co}
 \end{figure}
 We propose to solve the grasping problem of unknown objects by employing a supervised, data driven learning approach. we will focus on the estimation of the best grasping position denoted by $x,y,\rho,\phi,C$ 
@@ -38,7 +35,7 @@ In this section will be exposed all works related to robot grasping. In particul
 technological resources available; the second will deal with the use of CNNs in deep learning approaches. 
 
 \subsection{Object Grasping}
-In \cite{research_grasp}, back in 2000 A.D., the authors focused on issues that are central to the mechanics of grasping and the finger-object contact interactions. This research has established the theoretical
+In \cite{research_grasp}, the authors focused on issues that are central to the mechanics of grasping and the finger-object contact interactions. This research has established the theoretical
 framework for grasp analysis, simulation and synthesis by opening interesting scenarios for future works. In \cite{hybrid_approach}, the autors proposed a control scheme as the fusion of sensor 
 channels for visual perception, force measurement and motor encoder data. This hybrid approach, composed by visual estimations with kinematically determined orientations to control
 the movement of a humanoid arm, allowed the robot ARMAR-III to execute grasping tasks in a real-world scenario, as depicted in Figure \ref{fig:armar}.
@@ -118,16 +115,20 @@ DART, i.e., \emph{Dynamic Animation and Robotics Toolkit}, has better features t
 typically involve movement after a grasp is done. In \cite{deepLearningPose}, DART is used to build a simple parallel-jaw gripper to learn a grasp function, which computes a grasp quality score over all
 possible grasp poses, given a certain level of discretisation. A CNN is then trained to obtain a score for each pose across the entire image. 
 
-\section{Contributions}\label{sec:relatedwork}
+\section{Motivations and Contributions}\label{sec:relatedwork}
 This thesis is the result of a long work, passion for computer vision and the desire to extend on a real robot the ability to perceive the world around as well as grasp objects independently. I had the 
 opportunity to get passionate about grasping from my first experience in Robocup, as a member of the team @Work that focuses on robots in work-related scenarios, as depicted in Figure \ref{fig:robocup}. 
-After my personal and fantastic experience, learn how to grasp objects, in scenarios of robotics and artificial intelligence, has become the main goal of my work. In
-particular, this thesis focuses on two sequential steps: the first one is the acquisition of a new grasping dataset; the second one is the creation of a new Convolutional Neural Network (CNN) suitable for the features
-of the dataset, being the final goal learning the $(x,y)$ point of grasping coordinates by performing regression on the entire image. The dataset was acquired by real attempts to grab objects on a scene, taking 
-advantage of a sensor widely used in industrial and research scenarios such as \emph{Microsoft Kinect 2} for image capture and a \emph{ROBOX}\footnote{http://www.robox.it/it-IT/} 6R robotic arm. For this thesis 
-we choose to use a vacuum end effector as gripper and this means that only a singular point of grasping is available due to the shape of the gripper. Hence, the estimation of the x-y coordinates needs 
-to be evaluated in common with the estimation of the roll and pitch orientations (the advantages and disadvantages of using this gripper and also other different grippers will be described in detail in the
-chapter \ref{ch:robotgrasping}).
+After this experience, to ``teach'' a robot how to grasp objects has become one of the main goal of my work. \\
+
+The main contributions of these thesis are the following:
+\begin{itemize}
+ \item A new grasping dataset, based on an unsupervised ``try-and-test'' protocol;
+ \item A new Convolutional Neural Network (CNN) that learns, trained in an end-to-end fashon, to infer a suitable grasping point by performing regression on the entire RGB-D image;
+ \item An experiment evaluation that exploits a robot that, differently from previous work, is equipped with a vacuum gripper.
+\end{itemize}
+
+We take advantage of a sensor widely used in research scenarios, such as \emph{Microsoft Kinect 2}, and an \emph{Efort}\footnote{http://www.efort.com.cn/en/} 6R robotic arm. For this thesis, we choose to use a vacuum end effector as gripper and this means that only a singular point of grasping is available due to the shape of the gripper. Hence, the estimation of the x-y coordinates needs  to be evaluated in common with the estimation of the roll and pitch orientations (the advantages and disadvantages of using this gripper and also other different grippers will be described in detail in the chapter \ref{ch:robotgrasping}).
+
 \begin{figure}[H]
     \centering
     \includegraphics[scale=0.3]{figures/0_introduction/robocupTeam}
