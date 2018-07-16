@@ -1,0 +1,97 @@
+\chapter{Conclusions}\label{ch:conclusions}
+In this work we have presented a new way to solve the grasping problem of unknown objects by employing a supervised, data driven learning approach. We collected training data by means of a try-and-test
+procedure by using a 6 d.o.f. robotic manipulator with a vacuum gripper. We proposed to employ a CNN that directly learns the grasping function from RGB-D images by exploiting the image's features as a
+regression problem, in particular we split the image into a cell grid to achieve the estimation of a grasping position for each cell of the grid. We have seen that the network has learnt to predict
+which gripping points are acceptable for each cell or not, depending on the value of the confidence score predicted.
+
+What interests us most at this point is to understand how far this approach can be improved. Moreover, if it is proved to be a valid solution, it is necessary to understand how to exploit its power in the 
+various contexts of robotics, starting from research to possible practical implementations as in the case of industrial applications.
+
+This work certainly deserves to be further developed. For example, an extension of the data set through other acquisitions with the robot and perhaps the use of multiple robots in parallel would allow us to
+reduce the time factor. 
+
+Also the consideration of a data augmentation approach using synthetic data could provide us with interesting developments in terms of saving time and resources, taking also into consideration the synthetic
+generation of crucial parameters such as vacuum gripper orientation. In addition, network behavior should be tested with a wider range of agnostic objects on the network, in hostile and therefore complicated 
+scenarios such as industrial environments where many objects are piled up in a container with little light available.
+\newpage
+
+\begin{acknowledgements}
+Dear reader, if you have read my thesis until this page, I would like to say that this is the most important and difficult page to write at this point. Hence, I say goodbye to the english language and again, 
+thank you very much for the attention.
+
+Lasciatemi dire che sono commosso dall'idea di poter finalmente scrivere almeno qualche pagina con la nostra bella e tanto amata madrelingua Italiana. Comincio col volere ringraziare tutte quelle persone che hanno 
+voluto dedicarmi un caro e positivo pensiero per il conseguimento di questo mio traguardo. Ringrazio quindi tutti i miei familiari ed amici, chiedendo umilmente venia di non potervi elencare uno per uno, 
+siete veramente tanti. Sapete che mi sto riferendo proprio a voi: a chi lavora, alla mia band dei RHCP, a chi come me ha studiato e chi ancora sta studiando.
+
+Ringrazio i miei migliori amici ed anche compagni di studi in questi anni di universita' tra cui \emph{Andrea Caddeu}, \emph{Emidio Dell'Isola} e \emph{Paolo Mancini}; e' sempre stato un piacere studiare con 
+voi soprattutto nella vostra facolta' di Architettura. Grazie ai miei amici del DIAG tra cui \emph{Alessandra Ciorra}, \emph{Armando Nania}, \emph{Jose' Bustamante}, \emph{Andrea Perica} e \emph{Francesco Iodice} 
+(riguardo a voi ultimi due, non dimentichero' mai quanto ci siamo divertiti durante il progetto di Robotica 2 e Medical Robotics). Grazie a tutti i dottorandi che mi hanno sempre accolto con simpatia ed aiutato
+durante questi spassosi anni. 
+
+Ringrazio con tutto il cuore lo staff del \emph{RoCoCo Lab.} tra cui i colleghi della \emph{Robocup Soccer} e il mio team \emph{S.P.Q.R.} della \emph{Robocup@Work}, 
+in particolare mi riferisco ai miei amici: \emph{Daniele Evangelista}, \emph{Wilson Villa}, \emph{Marco Imperoli}, \emph{Francesco Chichi}, \emph{Giulio Turrisi} e \emph{Giuseppe L'Erario}, persone capaci di 
+fare e creare cose straordinariamente complicate senza neanche rendersene conto. Infine un ringraziamento ai miei professori tra cui \emph{Alberto Pretto}, \emph{Daniele Nardi}, \emph{Giorgio Grisetti} e 
+\emph{Luca Iocchi} per la loro professionalita' e competenza mostrata nei miei confronti. Probabilmente per tutti noi colleghi che abbiamo scelto di approfondire questa realta', quella della Robotica e 
+dell'Intelligenza Artificiale, sappiamo infondo che e' sempre stata solamente un divertimento e mai un peso lavorativo e penso che questa sia la cosa piu' importante. 
+
+Ringrazio anche molte delle persone considerate un tempo importanti che aime' hanno considerato frivolo o in qualche modo superficiale il mio percorso fatto fin ora. Probabilmente loro mi hanno insegnato
+che esisteranno sempre delle priorita' piu' importanti e che mai comprendero' appieno in questa mia vita. Una di queste per me rimarra' allontanare questa tipologie di persone. 
+
+Non si tratta di critica, di una provocazione o altro. Lo sanno tutti che stiamo parlando di una \emph{Super Laurea}! Fu cosi' che la defini' una volta a cena, a casa, mio fratello \emph{Manuel Monorchio} (e 
+comunque sia se per lui e' \emph{Super} significa che lo e' per davvero). La verita' e' che se sono arrivato fin qui' lo devo alla RARA fortuna, che molti purtroppo non avranno mai, di avere un fratello
+\emph{Super} come lui, che a sua volta, ha  di \emph{Super} una famiglia come \emph{Sara Pulli}, \emph{Francesco Lucio Monorchio} e \emph{Stefania Monorchio}. La RARA fortuna ovviamente di avere voi, \emph{Sergio Monorchio} e \emph{Simonetta Baiocco},
+come famiglia. Voi che sacrificate tutto cio' che di bello esiste pur di non farmi mancare mai niente, ogni singolo giorno della vostra vita. Forse e' inutile dirvelo poiche' sarei di parte, cio' non toglie 
+che siete unici ed io non sapro' mai come poter ricambiare tutto cio' che mi avete donato. Per chi non li conoscesse di persona, senza di loro sarei perso ed indubbiamente, non sarei qui' a scrivere una tesi
+di laurea magistrale. Infine, come altro membro indiscusso della famiglia, non smettero' mai di ringraziare la mia carissima Zia \emph{Dottoressa Maria Divari} per avermi aiutato con la matematica sin dai miei primi passi verso il mondo della conoscenza, sapienza e tutto cio'
+che di grande riguarda l'universita'. Maestra di studi e di vita, lei ha sempre creduto in me ed io ho avuto l'onore di apprendere ciascuno dei suoi preziosi insegnamenti. 
+
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{$ $}
+
+\emph{Ai miei cari Nonni,}
+
+\emph{per avermi accompagnato oggi alla laurea ...}
+
+\emph{$ $}
+
+\emph{Luca}
+
+\end{acknowledgements}

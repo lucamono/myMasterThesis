@@ -1,0 +1,132 @@
+\chapter{Introduction}\label{ch:intro}
+From birth grabbing objects for humans has been an extremely simple task but when robots would be able to grab objects with the same ease, we will definitely talk about a new industrial revolution, with changes in
+all areas of major interest such as freight transport, rescue operations, medical and welfare. This reflection means that robot grasping is not a solved problem. Recent studies, focused on the best pose of 
+grasping from images containing objects, have encountered many accuracy problems due to the difficulty of machine learning the right behaviour in different scenarios. For example, different objects can be in 
+uncomfortable positions to be grasped. In addition, factors such as incorrect calibration between the camera and robot, joint encoders, radial distortion and other causes, heavily affect the grasping task. Lately
+deep learning has taken root in robot grasping and has become a reference point for many studies and research. Starting from existing CNNs and related papers we worked intensively on the concept of estimation of
+the best pose for grasping objects. We have optimized fundamental aspects such as acquisition setups, custom CNN builded and a new loss function optimized for this project, all indispensable resources that have
+made this project possible.
+
+\section{Problem Statement and Motivations }\label{sec:motivations}
+We have always been attracted from science fiction movies in which robots were undisputed protagonists of the scene, able to interactive, and make their own choices independently. 
+Unfortunately, the reality is very far from what we see in movies, the robots are still not able to understand or to perform unexpected actions from logic to the concept of rebellion. Robot grasping has always
+been a difficult task to accomplish. In addition to the problem of grasping, and therefore of all the forces to be applied to the gripper and the robot joints, vision plays a fundamental role in the localization
+of the object and consequently the best grasping point available. Grasping in robotics is then split as a problem related to two essential components:
+\begin{itemize}
+ \item \textbf{The eye of the robot}: we are talking about the part related to the computer vision, indispensable for the understanding the surrounding environment and localization of objects.
+ \item \textbf{The arm with the hand of the robot}: we are talking about robot's parts related to mechanical, structure, joints, controller, end effector grippers and
+ so on; all the components related to physical object grasping. 
+\end{itemize}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/1_robot_grasping_with_antropomorphic_robots/hand-eye-robot}
+    \caption{\textbf{Vision and Grasping at work example.} The robot detects objects before picking them up.} 
+    \label{fig:hand-eye-robot-example}
+\end{figure}
+
+Currently, in the year 2018 A.D., neural networks are making great strides to artificial intelligence, emulating the functioning of the human brain through artificial neurons. These networks are becoming 
+in fact the state of the art for object detection and robotic grasping due to the computing power of computers equivalent to about 3 million of human brain neurons. When this capability will reach the neurons 
+that the human brain possesses, about 50 billion, we will probably need to reinvent the concept of ethics and religion; by now in this thesis we will focus on the creation of a neural network
+capable of predicting, given as input a color-depth image, the best point of grasping for unknown objects.
+
+\section{Related Works }\label{sec:related_works}
+In this section will be exposed all works related to robot grasping. In particular, we will start illustrating two sections: the first will include many contributions over the years, despite the limited 
+technological resources available; the second will deal with the use of CNNs in deep learning approaches. 
+
+\subsection{Object Grasping}
+In \cite{research_grasp}, back in 2000 A.D., the authors focused on issues that are central to the mechanics of grasping and the finger-object contact interactions. This research has established the theoretical
+framework for grasp analysis, simulation and synthesis by opening interesting scenarios for future works. In \cite{hybrid_approach}, the autors proposed a control scheme as the fusion of sensor 
+channels for visual perception, force measurement and motor encoder data. This hybrid approach, composed by visual estimations with kinematically determined orientations to control
+the movement of a humanoid arm, allowed the robot ARMAR-III to execute grasping tasks in a real-world scenario, as depicted in Figure \ref{fig:armar}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/0_introduction/ARMAR3}
+    \caption{\textbf{The ARMAR-III grasping.} ARMAR-III is grasping a mashed potatoes box, captured by the robot’s camera system. Courtesy of \cite{hybrid_approach}} 
+    \label{fig:armar}
+\end{figure}
+A different and interesting approach is proposed in \cite{rectangle_7D}, the autors tried to estimate the full 7-dimensional gripper configuration: its 3D location, 3D orientation and the gripper 
+opening width using both RGB and depth registered images. Hence, they proposed a new grasping rectangle as an oriented rectangle in the image plane taking into account the location, 
+the orientation as well as the gripper opening width. An example of this process is shown in Figure \ref{fig:shoes_grasp}. Due its computationally expensive this work was splitted 
+in two steps to accurately obtained a good grasp.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/0_introduction/RGBD_grasp}
+    \caption{\textbf{The grasping rectangle.} On left: the rgb image; on right: the registered depth map. The oriented rectangle indicates where to grasp the shoe and the gripper’s
+    orientation. The gripper’s opening width and its physical size are represented by the red and blue lines.} 
+    \label{fig:shoes_grasp}
+\end{figure}
+Another qualitative work has been done in \cite{epsilon_grasp} using simulators. The autors focused on the stability of the widely used grasp wrench space epsilon quality metric over
+a large range of poses in simulation. A large number of grasps from the Columbia Grasp Database have been examined for the Barrett hand to proved that grasps can be evaluated by an 
+estimate of the stability of their epsilon quality, as depicted in Figure \ref{fig:epsilon_grasped}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/0_introduction/epsilon_grasp}
+    \caption{\textbf{Effect of pose uncertainty on the force closure of a grasp example.} On left: planned grasp from a database of preplanned grasps with an $\epsilon_{GWS}$ of 0.17;
+    on right: the same grasp after a 20 degrees clockwise rotation and 1 cm translation. This perturbation results in a non-force closed grasp.} 
+    \label{fig:epsilon_grasped}
+\end{figure}
+
+\subsection{Learning and Grasping}
+Over the years, deep learning and computer vision have dramatically changed the field of object recognition as deep learning camera control for active recognition, deep reinforcement learning for end-to-end 
+robot arm control training, deep learning features for robot localisation, and so on. Despite the invaluable benefits by using these methods in robotics, robot grasping is very far from solved problem. Most of work and
+studies carried out to date are based on determining the grasp poses from images, in which CNNs has achieved the state-of-the-art solutions. An approach as \cite{motion} is based on the knowledge aggregation of 
+different training samples into a canonical model by finding a transformation from the canonical model to the view in the latent shape space, linearly interpolating and extrapolating from other transformations found 
+within the category, which best matches the observed 3D point. Other approaches used was to manually-label a specific grasping-point of an object within the images as the \emph{Cornell} grasping 
+dataset \cite{cornell}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/0_introduction/cornell_dataset}
+    \caption{\textbf{The Cornell Dataset.} On Cornell Grasping Dataset, each object has multiple labelled grasps. Taken from www.researchgate.net/figure} 
+    \label{fig:cornell}
+\end{figure}
+As depicted in Figure \ref{fig:cornell}, this labeled dataset, composed by RGB and depth images, identifies grasping rectangles in an image where human labellers have determined a parallel-jaw gripper pose defined
+in image coordinates. In \cite{deep_grasp}, this dataset is used to train CNNs by combining both RGB and depth data in one single network in order to predict the probability of the grasping-points by exploiting
+the corresponding image patches. An optimization of this work has been done in \cite{deep_full_image} where patches have been abolished and the entire image within the network has been exploited with a drastic
+reduction in the  computational time's cost. The manually-labelled images approach is not efficient for larger-scale training because deep learning needs a very large volume of data, to solve 
+this problem the solution adopted during the years was to automatically generate training data. Real-world experiments on real robot, as depicted in Figure \ref{fig:parallel_robots}, proves that a reinforcement 
+learning can achieve effective results by attempting to grasp objects located on platform. The only scalability limitation is due to the training period (that can be several weeks as in the case of \cite{real_deep1}).
+In \cite{real_deep2} for example, multiple robots in parallel are used to predict a suitable pose for grasping as a form of visual servoing. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/0_introduction/parallel_robots}
+    \caption{\textbf{Parallel robots attempting grasp.} In this example, the acquisition of the dataset is performed for thousand hours on parallel robots until a very large number of acquisition is done.
+    Taken from https://spectrum.ieee.org/automaton/robotics/artificial-intelligence/google-large-scale-robotic-grasping-project} 
+    \label{fig:parallel_robots}
+\end{figure}
+An alternative approach consists of generating training data in simulation, with the goal to limit the gap between synthetic data and real data. As an example, among most popular simulators used in grasping 
+are GraspIt! \cite{graspit} (Figure \ref{fig:graspit}) and DART \cite{dart} (Figure \ref{fig:dart}). GraspIt! processes 3D meshes of objects and computes the stability of a grasp to a high accuracy by close analysis 
+of the object shape. It can accommodate arbitrary hand and robot designs originally developed by the \emph{Columbia University Robotics Group}, in addition, objects and obstacles of arbitrary geometry can be loaded 
+to populate a complete simulation world. The only limitation is given by the absence of dynamic effects within the simulator which are typically involved in real grasping. 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/0_introduction/graspit}
+    \caption{\textbf{GraspIt! simulator.} 3D user interface allowing the user to interact with a virtual world containing robots, objects and obstacles. Each grasp is evaluated with
+    numeric quality measures. Taken from www.researchgate.net/figure} 
+    \label{fig:graspit}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{figures/0_introduction/dart}
+    \caption{\textbf{DART simulator.} DART simulator includes physical forces and dynamic modelling during grasping. Courtesy of \cite{deepLearningPose}.} 
+    \label{fig:dart}
+\end{figure}
+DART, i.e., \emph{Dynamic Animation and Robotics Toolkit}, has better features than GraspIt!. In particular, it provides dynamic modelling including most of the physical forces acting during simulation, which
+typically involve movement after a grasp is done. In \cite{deepLearningPose}, DART is used to build a simple parallel-jaw gripper to learn a grasp function, which computes a grasp quality score over all
+possible grasp poses, given a certain level of discretisation. A CNN is then trained to obtain a score for each pose across the entire image. 
+
+\section{Contributions}\label{sec:relatedwork}
+This thesis is the result of a long work, passion for computer vision and the desire to extend on a real robot the ability to perceive the world around as well as grasp objects independently. I had the 
+opportunity to get passionate about grasping from my first experience in Robocup, as a member of the team @Work that focuses on robots in work-related scenarios, as depicted in Figure \ref{fig:robocup}. 
+After my personal and fantastic experience, learn how to grasp objects, in scenarios of robotics and artificial intelligence, has become the main goal of my work. In
+particular, this thesis focuses on two sequential steps: the first one is the acquisition of a new grasping dataset; the second one is the creation of a new Convolutional Neural Network (CNN) suitable for the features
+of the dataset, being the final goal learning the $(x,y)$ point of grasping coordinates by performing regression on the entire image. The dataset was acquired by real attempts to grab objects on a scene, taking 
+advantage of a sensor widely used in industrial and research scenarios such as \emph{Microsoft Kinect 2} for image capture and a \emph{ROBOX}\footnote{http://www.robox.it/it-IT/} 6R robotic arm. For this thesis 
+we choose to use a vacuum end effector as gripper and this means that only a singular point of grasping is available due to the shape of the gripper. Hence, the estimation of the x-y coordinates needs 
+to be evaluated in common with the estimation of the roll and pitch orientations (the advantages and disadvantages of using this gripper and also other different grippers will be described in detail in the
+chapter \ref{ch:robotgrasping}).
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.3]{figures/0_introduction/robocupTeam}
+    \caption{\textbf{Spqr@Work team.} My team and I during the Robocup2018 GermanOpen competition in Magdeburg.} 
+    \label{fig:robocup}
+\end{figure}
