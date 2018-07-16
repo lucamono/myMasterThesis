@@ -176,7 +176,7 @@ $\mathbb{R}^2$ as:
 \label{eq:mapping_points}
 \end{equation}
 \newline
-The mapping \ref{eq:mapping_points} describes the central projection mapping from world to image coordinates, in little terms it represents the camera centre depicted in figure \ref{fig:camera_img}.
+The Mapping \ref{eq:mapping_points} describes the central projection mapping from world to image coordinates, in little terms it represents the camera centre depicted in Figure \ref{fig:camera_img}.
 Figure \ref{fig:camera_img} also shows the principal axis of the camera, i.e., the line from the camera centre perpendicular to the image plane; the principal point, i.e., the point where the
 principal axis meets the image plane and the principal plane of the camera, i.e., the plane through the camera centre parallel to the image plane. Using homogeneous coordinates, the central projection
 can be written in matrix form as:
@@ -205,15 +205,15 @@ can be written in matrix form as:
   \label{eq:central_proj_homog}
  \end{equation}
  \newline
-The equation \ref{eq:central_proj_homog} can be written in compactly form as:
+The Equation \ref{eq:central_proj_homog} can be written in compactly form as:
 \newline
 \begin{equation}
 x = PX 
 \label{eq:compact_central_proj_homg}
 \end{equation}
 \newline
-P, equation \ref{eq:compact_central_proj_homg}, represents the camera matrix for the pinhole model of central projection as the 3x4 homogeneous camera projection matrix ($diag(f,f,1)[I|0]$).
-Until now, we have assumed that the principal point corresponds to the origin of coordinates in the image plane, this is a semplification of the general case, as shows in figure 
+P, Equation \ref{eq:compact_central_proj_homg}, represents the camera matrix for the pinhole model of central projection as the 3x4 homogeneous camera projection matrix ($diag(f,f,1)[I|0]$).
+Until now, we have assumed that the principal point corresponds to the origin of coordinates in the image plane, this is a semplification of the general case, as shows in Figure 
 \ref{fig:principal_points}, where the coordinates of the principal point $(p_x, p_y)^T$ are unconstrained.
 
 \begin{figure}[H]
@@ -223,7 +223,7 @@ Until now, we have assumed that the principal point corresponds to the origin of
     \label{fig:principal_points}
 \end{figure}
 
-The expression \ref{eq:mapping_points} can be rewritten in general form as:
+The Expression \ref{eq:mapping_points} can be rewritten in general form as:
 \newline
 \begin{equation}
   (X Y Z)^T \mapsto \bigg(\frac{fX}{Z}+p_x,\frac{fY}{Z}+p_y\bigg)^T
@@ -256,7 +256,7 @@ Also in this case, the equation \ref{eq:princ_points} may be expressed in homoge
   \label{eq:princ_points_homog}
  \end{equation}
 \newline
-Let us now rewrite equation \ref{eq:princ_points_homog} obtained in the following form:
+Let us now rewrite Equation \ref{eq:princ_points_homog} obtained in the following form:
 \newline
  \begin{equation}
   x = K[I|0]X_{cam}
@@ -275,7 +275,7 @@ Let us now rewrite equation \ref{eq:princ_points_homog} obtained in the followin
   \label{eq:camera_matrix}
  \end{equation}
  \newline
-To obtain the external parameters of the camera we need to extend the equation \ref{eq:concise_form} because the vector $X_{cam}$ was been assumed at the origin of a Euclidean coordinate system with the principal 
+To obtain the external parameters of the camera we need to extend the Equation \ref{eq:concise_form} because the vector $X_{cam}$ was been assumed at the origin of a Euclidean coordinate system with the principal 
 axis of the camera pointing straight down the Z-axis. Suppose $\tilde{X}$ be the inhomogeneous 3-vector coordinates of a point in the world coordinate frame and suppose also $\tilde{X_{cam}}$ be the same 
 point represented in the camera coordinate frame. We can write:
 \newline
@@ -284,8 +284,8 @@ point represented in the camera coordinate frame. We can write:
  \label{eq:external_param}
  \end{equation}
  \newline
-In this expression \ref{eq:external_param} it is clear that R corresponds to a rotation  matrix, in particular to the  orientation of the camera coordinate frame; $\tilde{C}$ corresponds to the camera centre
-expressed in the world coordinate frame. Also in this case, the obtained equation \ref{eq:external_param} may be expressed in homogeneous coordinates as:
+In this Expression \ref{eq:external_param} it is clear that R corresponds to a rotation  matrix, in particular to the  orientation of the camera coordinate frame; $\tilde{C}$ corresponds to the camera centre
+expressed in the world coordinate frame. Also in this case, the obtained Equation \ref{eq:external_param} may be expressed in homogeneous coordinates as:
 \newline
 \begin{equation}
   X_{cam}=
@@ -310,7 +310,7 @@ expressed in the world coordinate frame. Also in this case, the obtained equatio
   \label{eq:general_pinhole_model_camera}
  \end{equation}
 \newline
-In this mapping \ref{eq:general_pinhole_model_camera}, $X$ is now in a world coordinate frame. $R$  and $\tilde{C}$ are called the \emph{external parameters} of the camera and correspond to the camera orientation
+In this Mapping \ref{eq:general_pinhole_model_camera}, $X$ is now in a world coordinate frame. $R$  and $\tilde{C}$ are called the \emph{external parameters} of the camera and correspond to the camera orientation
 and position w.r.t. the world coordinate system. As seen before, K represents internal camera parameters. The general pinhole camera has 9 d.o.f. (3 parameters for K, R, and $\tilde{C}$) and in this case the
 image coordinates have equal scales in both axial directions. In the case of CCD cameras, there is the additional possibility of 
 having non-square pixels by multiplying the camera matrix K on the left by an extra factor diag($m_x$,$m_y$,1):
@@ -340,8 +340,8 @@ IR light at a certain wavelength, as shown in Figure \ref{fig:ToF_sensor}.
     \caption{\textbf{Time-of-Flight sensor example.} A standard CMOS measured the distance between the object.} 
     \label{fig:ToF_sensor}
 \end{figure}
-Thanks to the use of CMOS, ToF sensors allow to obtain a full depth in real time, excellent for mobile robots especially during the SLAM phase. Obviously and unfortunately against, the quality is generally low and
-accuracy is not always synonymous with warranty especially with reflective materials such as metals or black surfaces. 
+Thanks to CMOS, ToF sensors allow to obtain a full depth in real time, excellent for mobile robots especially during the SLAM phase. Obviously and unfortunately against, the quality is generally low and
+accuracy is not always garantle especially with reflective materials such as metals or black surfaces. 
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.8]{figures/1_robot_grasping_with_antropomorphic_robots/terarange}
@@ -349,9 +349,9 @@ accuracy is not always synonymous with warranty especially with reflective mater
     \label{fig:terarange_one}
 \end{figure}
 
-As far as Structured Light sensors are concerned, this type of sensor is based on light triangulation. These devices encompass many system, each different due their geometry and
+As far as Structured Light sensors are concerned, this kind of sensor is based on light triangulation. These devices encompass many different system, due their geometry and
 configuration, i.e., number of cameras, baseline, and position of the projector, and the characteristics of the projected pattern, i.e., moving pattern, moving head, dense pattern 
-and so on. Hence, they are essentially a depth sensors that incorporate a laser projector inside that can project patterns of light. In this way, knowing the static distance between
+and so on. Hence, they are essentially depth sensors incorporating a laser projector inside that can project patterns of light. In this way, knowing the static distance between
 the camera and the sensor projector, it is possible to measure the distance of the 3D points generated by the laser (Figure \ref{fig:SL_sens}). 
  \begin{figure}[H]
     \centering

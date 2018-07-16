@@ -1,24 +1,21 @@
 \chapter{Introduction}\label{ch:intro}
-From birth grabbing objects for us humans has been an extremely simple task but imagine the impact that could cause a future where robots would be able to grab objects with the
-same ease, we would definitely talk about a new industrial revolution, with changes in all areas of major interest such as freight transport, rescue operations, medical and welfare. 
-This reflection lies in the fact that robot grasping is not a solved problem. Recent studies, with aim the computation of the best pose of grasping from images that contains 
-objects, have encountered many accuracy problems due to the difficulty of making the machine learn the right behaviour in different scenarios, in which for example, different 
-objects can find themselves in uncomfortable positions to be grasped. In addition, factors such as incorrect calibration between the camera and robot, joint encoders, radial 
-distortion and other causes, heavily affect the grasping task. Lately deep learning has taken root in robot grasping and has become a reference point for many studies and research.
-Taking inspiration from existing CNNs and related works we worked intensively on the concept of estimation of the best pose for grasping objects. We have optimized fundamental
-aspects such as acquisition setups, custom CNN builded and a new loss function optimized for this project, all indispensable resources that have made this thesis project possible.
+From birth grabbing objects for humans has been an extremely simple task but when robots would be able to grab objects with the same ease, we will definitely talk about a new industrial revolution, with changes in
+all areas of major interest such as freight transport, rescue operations, medical and welfare. This reflection means that robot grasping is not a solved problem. Recent studies, focused on the best pose of 
+grasping from images containing objects, have encountered many accuracy problems due to the difficulty of machine learning the right behaviour in different scenarios. For example, different objects can be in 
+uncomfortable positions to be grasped. In addition, factors such as incorrect calibration between the camera and robot, joint encoders, radial distortion and other causes, heavily affect the grasping task. Lately
+deep learning has taken root in robot grasping and has become a reference point for many studies and research. Starting from existing CNNs and related papers we worked intensively on the concept of estimation of
+the best pose for grasping objects. We have optimized fundamental aspects such as acquisition setups, custom CNN builded and a new loss function optimized for this project, all indispensable resources that have
+made this project possible.
 
 \section{Problem Statement and Motivations }\label{sec:motivations}
-We have always been attracted of science fiction movies in which robots were undisputed protagonists of the scene, able to serve, interact and make choices independently. 
-Unfortunately, the reality is very different from what we see in the films, the robots are still not able to understand or to perform unexpected actions from logic until to reach
-the concept of rebellion. Robot grasping has always been a difficult task to accomplish. In addition to the problem of grasping, and therefore of all the forces to be applied to the gripper and 
-the robot joints, vision plays a fundamental role in the localization of the object and consequently the best grasping point available. Grasping in robotics is then split as a problem related to two 
-essential components belonging to a robot:
+We have always been attracted from science fiction movies in which robots were undisputed protagonists of the scene, able to interactive, and make their own choices independently. 
+Unfortunately, the reality is very far from what we see in movies, the robots are still not able to understand or to perform unexpected actions from logic to the concept of rebellion. Robot grasping has always
+been a difficult task to accomplish. In addition to the problem of grasping, and therefore of all the forces to be applied to the gripper and the robot joints, vision plays a fundamental role in the localization
+of the object and consequently the best grasping point available. Grasping in robotics is then split as a problem related to two essential components:
 \begin{itemize}
- \item \textbf{The eye of the robot}: we are talking about the part related to the computer vision, indispensable for the understanding of the surrounding environment and the
- localization of objects
- \item \textbf{The arm with the hand of the robot}: we are talking about the robot's parts related to the mechanical, structure, joints, controller, end effector grippers and
- so on; all the components related to the physical object grasping 
+ \item \textbf{The eye of the robot}: we are talking about the part related to the computer vision, indispensable for the understanding the surrounding environment and localization of objects.
+ \item \textbf{The arm with the hand of the robot}: we are talking about robot's parts related to mechanical, structure, joints, controller, end effector grippers and
+ so on; all the components related to physical object grasping. 
 \end{itemize}
 \begin{figure}[H]
     \centering
@@ -27,24 +24,24 @@ essential components belonging to a robot:
     \label{fig:hand-eye-robot-example}
 \end{figure}
 
-Currently, in the calendar year 2018 A.D., neural networks are making great strides to artificial intelligence, emulating the functioning of the human brain through artificial neurons. These networks are becoming 
-in fact the state of the art for object detection and robotic grasping due to the computing power of computers equivalent to about 3 million of human brain neurons. When this capability reaches the number of 
-neurons that the human brain possesses, about 50 billion, there will probably be to reinvent the concept of ethics and religion; for the moment in this thesis we will focus on the creation of a neural network
+Currently, in the year 2018 A.D., neural networks are making great strides to artificial intelligence, emulating the functioning of the human brain through artificial neurons. These networks are becoming 
+in fact the state of the art for object detection and robotic grasping due to the computing power of computers equivalent to about 3 million of human brain neurons. When this capability will reach the neurons 
+that the human brain possesses, about 50 billion, we will probably need to reinvent the concept of ethics and religion; by now in this thesis we will focus on the creation of a neural network
 capable of predicting, given as input a color-depth image, the best point of grasping for unknown objects.
 
 \section{Related Works }\label{sec:related_works}
-In this section all the works related to the robot grasping will be exposed. In particular, we will start by illustrating two sections: the first will include many contributions over the years, despite the limited 
+In this section will be exposed all works related to robot grasping. In particular, we will start illustrating two sections: the first will include many contributions over the years, despite the limited 
 technological resources available; the second will deal with the use of CNNs in deep learning approaches. 
 
 \subsection{Object Grasping}
 In \cite{research_grasp}, back in 2000 A.D., the authors focused on issues that are central to the mechanics of grasping and the finger-object contact interactions. This research has established the theoretical
-framework for grasp analysis, simulation and synthesis by opening up interesting scenarios for future works. In \cite{hybrid_approach}, the autors proposed a control scheme as the fusion of the sensor 
+framework for grasp analysis, simulation and synthesis by opening interesting scenarios for future works. In \cite{hybrid_approach}, the autors proposed a control scheme as the fusion of sensor 
 channels for visual perception, force measurement and motor encoder data. This hybrid approach, composed by visual estimations with kinematically determined orientations to control
 the movement of a humanoid arm, allowed the robot ARMAR-III to execute grasping tasks in a real-world scenario, as depicted in Figure \ref{fig:armar}.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\textwidth]{figures/0_introduction/ARMAR3}
-    \caption{\textbf{The ARMAR-III grasping.} ARMAR-III is grasping a mashed potatoes box, captured by the robot’s camera system.} 
+    \caption{\textbf{The ARMAR-III grasping.} ARMAR-III is grasping a mashed potatoes box, captured by the robot’s camera system. Courtesy of \cite{hybrid_approach}} 
     \label{fig:armar}
 \end{figure}
 A different and interesting approach is proposed in \cite{rectangle_7D}, the autors tried to estimate the full 7-dimensional gripper configuration: its 3D location, 3D orientation and the gripper 
@@ -71,7 +68,7 @@ estimate of the stability of their epsilon quality, as depicted in Figure \ref{f
 
 \subsection{Learning and Grasping}
 Over the years, deep learning and computer vision have dramatically changed the field of object recognition as deep learning camera control for active recognition, deep reinforcement learning for end-to-end 
-robot arm control training, deep learning features for robot localisation, and so on. Despite the invaluable benefits by using these methods in robotics, robot grasping is very far from a problem solved. Most of the work and
+robot arm control training, deep learning features for robot localisation, and so on. Despite the invaluable benefits by using these methods in robotics, robot grasping is very far from solved problem. Most of work and
 studies carried out to date are based on determining the grasp poses from images, in which CNNs has achieved the state-of-the-art solutions. An approach as \cite{motion} is based on the knowledge aggregation of 
 different training samples into a canonical model by finding a transformation from the canonical model to the view in the latent shape space, linearly interpolating and extrapolating from other transformations found 
 within the category, which best matches the observed 3D point. Other approaches used was to manually-label a specific grasping-point of an object within the images as the \emph{Cornell} grasping 
