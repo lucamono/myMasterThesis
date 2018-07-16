@@ -1,0 +1,180 @@
+\chapter{Experiments}\label{ch:experiments}
+Finding the best grasping pose is not an easy task, especially when the parameters to be estimated concern not only the
+position but also the orientation with which the robot will have to grasp the object. Unlike YOLO and other networks that compute a 2D bounding box, i.e., a region of the image that contains the object, our
+approach is based on finding a single, specific point within the image that is most suitable for grasping, not excluding other grasping points. All these aspects will be discussed in this chapter, and the results obtained after training our neural network will be shown.
+
+\subsection{Experiments Results}
+The set of parameters used for the network's training are shown in \tabref{tab:network_training_params}.
+\begin{table}
+	\centering
+    \begin{tabular}{| l | l |}
+    \hline
+    \textbf{Parameter} & \textbf{Value} \\ \hline
+	\emph{Optimizer} & Adam \\
+	\emph{AMSGrad} & Disabled \\
+	\emph{Momentum} & 0.9 \\
+	\emph{Decay} & 0.0 \\
+	\emph{Learning rate} & 0.0001 \\
+	\emph{Batch size} & 16 \\
+	\emph{Max batches} & 4000 \\
+    \hline
+    \end{tabular}
+    \caption{\textbf{Training's parameters.} This Table shows the parameters' setup used to train the network.}
+    \label{tab:network_training_params}
+\end{table}
+Our network has been trained on a subset of images of the acquired dataset, taking a relationship of successes of grasping equal to 1/3 and failures of grasping equal to 2/3, for an
+overall of 3 thousands images. This subset allows us to balance the number of successes and failures to obtain the network to learn the correct features of the dataset, avoiding the 
+bad case in which the prediction regards only the not admissible grasping points within the image, as depicted in figure \ref{fig:bad_case}.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{figures/5_experiments/bad_case}
+    \caption{\textbf{Bad case of prediction's output.} Picture shows the output of a scenario in which the network has been trained in all 4 thousands images of the our dataset. In this case,
+    there are no admissible points of grasping predicted by the network.} 
+    \label{fig:bad_case}
+\end{figure} 
+
+\section{Results}\label{sec:environment_setup}
+From our results, the network will be able to predict a set of grasping points within the image, once trained. A clear example is shown in figure \ref{fig:distrib}. In fact, the network will extract a
+specific point with a predicted confidence score between 0 and 1, for each cell, the higher the score and the more the point will be the candidate for grasping. Obviously, where the confidence will be 
+low, it is assumed that there are no objects in that region. Hence, in addition to the maximum confidence candidate point, i.e., the best grasping point according to the network, there will be other points
+with very high confidence that can be classified as grasping points. For this reason, the experiments will be evaluated from two different points of view: the first considering all scenarios with maximum 
+confidence score; the second analyzing the first 4 highest points of confidence in the overall grid cells.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{figures/5_experiments/dist}
+    \caption{\textbf{Distribution of predicted point of grasping.} Picture shows: in red, all the predicted points with a low confidence score; in blue, the predicted point of grasping with maximum confidence score;
+    in green, the point of grasping predicted with the second best confidence score; in yellow and orange, the 2 remaining points with an high confidence scores.} 
+    \label{fig:distrib}
+\end{figure}
+
+\subsection{Metrics}
+The tests were performed on 2 sets of 100 images each. The tests were carried out on 2 sets of 100 images each. Every single test is considered a successful scenario if only, given the point of grasping $x,y,\rho,\phi,C$
+predicted by the network, the robot manages to grasp an object and lift it up to a height of 30 cm over the board. These sets are composed by:
+\begin{itemize}
+ \item \textbf{Not agnostic training objects:} These 100 scenarios contain objects present inside the dataset. It is based on the prediction of admissible grasping points for objects that are not agnostic
+ for the network. Obviously there is no dependency with the training set because every tested scenario has been independently acquired of the network's training.  
+ \item \textbf{Agnostic training objects:} These 100 scenarios contain objects not belonging to the dataset (figure \ref{fig:agnostic_objs}). It is therefore based on the prediction of admissible grasping points 
+ for objects never seen before on the network, making them agnostic to it. In this case, there is no dependency on the training set because each scenario tested has been acquired independently of the
+ network formation.
+\end{itemize}
+ \begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{figures/5_experiments/agnostic_objs}
+    \caption{\textbf{Agnostic objects tested.} Picture shows the set of agnostic objects used during the experimental test.} 
+    \label{fig:agnostic_objs}
+\end{figure}
+Obviously, during the first test (set of images containing not agnostic objects) it is easier for the network to identify new feasible grasping points. What is most 
+interesting of this work is in fact to see the behavior of the network with unknown objects, as in the case of the second test of images containing agnostic objects. Now it is possible to test the robustness of the network with the aim 
+of paving the way for future work, useful and applicable in many industrial sectors.
+ 
+\subsection{The Maximum Confidence Score}
+\tabref{tab:max_score_table_results} shows the results obtained taking into consideration, for each image, the point with the maximum confidence value predicted by the network. As expected, network accuracy on the non-agnostic dataset is
+higher than accuracy on the agnostic dataset due to experience, the "knowledge" of various objects encountered during the training phase.
+\newline
+\newline
+\begin{table}[H]
+ \centering
+   \begin{tabular}{ llllllll }
+   &\multicolumn{5}{c}{ \textbf{Maximum candidate} }\\
+   \cmidrule(lr){2-6} \cmidrule(lr){7-8}
+   \textbf{Object Set} & \emph{Good(All)} & \emph{Bad(All)} & \emph{Accuracy} \\
+   \cline{1-4}\noalign{\vskip 1mm}
+   \emph{Not Agnostic} & 84(100) & 16(100) & 0.84\\
+   \emph{Agnostic} & 62(100) & 38(100) & 0.62 \\
+%   \vspace{0.025cm} \\
+%   \cline{1-8} \\
+  \cline{1-4}\noalign{\vskip 1mm}
+   \end{tabular} 
+   \caption{\textbf{The maximum confidence score results}}
+   \label{tab:max_score_table_results}
+\end{table}
+\subsection{The 4 Highest Confidence Scores}
+As mentioned above, the network is able to predict, for each image, for each cell, a grasping point (with a different confidence value). We shown the results obtained for the not agnostic set 
+(\tabref{tab:4_highest_points_tab_not_agnostic}) and for the agnostic set (\tabref{tab:4_highest_points_tab_agnostic}), taking into account the first 4 confidence higher points in the entire 
+grid cell distribution. These output points are marked with a color related to the higher confidence score in the following order of importance: Blue is the highest confidence score
+point predicted; Green is the point with the second highest confidence score predicted; Yellow is the point with the third highest confidence score predicted; Orange is the point with the fourth highest
+confidence score predicted. 
+\newline
+\newline
+\begin{table*}[ht!]
+	\scriptsize
+	\centering
+	\resizebox{0.7\textwidth}{!}{
+	 \begin{tabular}{ cccc }
+	 \multicolumn{1}{c}{} & \multicolumn{3}{c}{ \textbf{Not Agnostic}}\\
+	 \cmidrule(lr){2-4}
+	 {\parbox[c]{3cm}{\centering Best candidates}} & {\parbox[c]{1cm}{\centering Good(All)}} &{\parbox[c]{1cm}{\centering Bad(All)}} &{\parbox[c]{1cm}{\centering Accuracy}}\\\cline{1-4}\noalign{\vskip 1mm}
+
+	 1 (Blue) & 84(100) & 16(100) & 0.84\\
+	 2 (Green) & 44(100) & 56(100) & 0.44 \\
+	 3 (Yellow) & 42(100) & 58(100) & 0.42 \\
+	 4 (Orange) & 38(100) & 62(100) & 0.38 \\\hline
+	 \end{tabular}	
+	 }
+	 \caption{The 4 highest confidence score points on not agnostic set. The accuracy of the network has been tested on a set of 100 test images. The set contains only not agnostic objects w.r.t. the 
+	 network.}
+	 \label{tab:4_highest_points_tab_not_agnostic}
+\end{table*}
+
+\begin{table*}[ht!]
+	\scriptsize
+	\centering
+	\resizebox{0.7\textwidth}{!}{
+	 \begin{tabular}{ cccc }
+	 \multicolumn{1}{c}{} & \multicolumn{3}{c}{ \textbf{Agnostic}}\\
+	 \cmidrule(lr){2-4}
+	 {\parbox[c]{3cm}{\centering Best candidates}} & {\parbox[c]{1cm}{\centering Good(All)}} &{\parbox[c]{1cm}{\centering Bad(All)}} &{\parbox[c]{1cm}{\centering Accuracy}}\\\cline{1-4}\noalign{\vskip 1mm}
+
+	 1 (Blue) & 62(100) & 38(100) & 0.62 \\
+	 2 (Green) & 46(100) & 54(100) & 0.46 \\
+	 3 (Yellow) & 44(100) & 56(100) & 0.44  \\
+	 4 (Orange) & 34(100) & 66(100) & 0.34 \\\hline
+	 \end{tabular}	
+	 }
+	 \caption{The 4 highest confidence score points on agnostic set. The accuracy of the network has been tested on a set of 100 test images. The set contains only agnostic objects w.r.t. the 
+	 network.}
+	 \label{tab:4_highest_points_tab_agnostic}
+\end{table*}
+As expected, the results show how the accuracy of the network decreases gradually through the order of importance of the 4 considered points. However, thanks to the analysis of the results obtained from this 
+distribution, we have noticed an interesting aspect regarding the ``Bad Points'' shown in \tabref{tab:max_score_table_results}, i.e., all that maximum confidence score points that the network has not been able to predict 
+in the correct way. In particular, a test scenario considered as failed due to these points can be considered as a successful scenario considering all those ``Good points'' within the distribution of the 
+first 4 points. Two examples are shown in Figures \ref{fig:example1} and \ref{fig:example2}.  
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{figures/5_experiments/example_1}
+    \caption{\textbf{Bad point example 1.} Picture shows a scenario where the network fails the grasping prediction for the point with the highest confidence score (in blue). However, the network correctly predicts both 
+    second and third points with the highest confidence score (in green and in orange).} 
+    \label{fig:example1}
+\end{figure}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.6]{figures/5_experiments/example_2}
+    \caption{\textbf{Bad point example 2.} Picture shows a scenario where the network fails the grasping prediction for the point with the highest confidence score (blue point). However, the network correctly
+    predicts the second point with the highest confidence score (green point).} 
+    \label{fig:example2}
+\end{figure}
+Therefore, in a test scenario we can say that among the 4 distribution points candidates for grasping it is not always certain that the point with the highest score of confidence is the best candidate to grasp an
+object.
+
+\newpage
+\subsection{Discussion}
+From the results obtained from the experiments we showed how the approach of exploiting the features of the images to predict a grasping point produced good and interesting results. We can deduce with certainty 
+that, in the majority of the scenarios, the network has learnt to predict points suitable for the grasping of objects. Obviously, the best results come from objects that are not agnostic to the network. As far
+as unknown objects are concerned, we have followed good results as the network has learned to grasp more than half of the test scenarios proposed. To close this chapter, let's show some examples of the results
+shown in Table \ref{tab:4_highest_points_tab_agnostic} in the following images:
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale=0.4]{figures/5_experiments/output_results}
+    \caption{\textbf{CNN Output results example.} Examples of output predicted by the CNN. To be noticed a bad output example shown on the bottom right picture.} 
+    \label{fig:output_results}
+\end{figure}
+Due to the limitation of time and with the cardinality of the dataset(only 4000 acquisitions done), we can say that the behaviour learned was in line with our expectations. Moreover, the results showed us
+an interesting aspect related to the predicted points provided by the network, showing that in some cases, scenarios that fail due to an incorrect output, can be successful for some points below the maximum score.
+This observation opens the door to further consideration. In fact, we can further strengthen our system, making the robot able to grasp objects more autonomously. We can think that a successful object grasping
+independently of the number of attempts done, avoiding to focalize only on the maximum confidence score predicted. In this 
+way the accuracy can be more than the results obtained and considered in this paper.
+
+\end{itemize}
+
+
