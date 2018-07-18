@@ -2,13 +2,28 @@
 ###### Luca Monorchio's master thesis, July 2018
 
 #### Abstract
-The evolution of technology has opened new revolutionary scenarios in the field of robotics, making it underhand the human presence in favor of the use of increasingly efficient and automated systems. The 
-possibility of using robots capable of grasping complicated, as well as heavy, objects pushes the industrial sector towards automatic palletizing, replacing human labour as far as possible. The main reasons are
-purely economic, aimed at saving both time and production, which are essential in this type of sector. The robotics grasping research regards to make machines understand which is the best way to grasp objects 
-independently, in little terms, the estimation of the best grasping pose. We are therefore faced with a clear problem of computer vision, a fundamental element to allow the robot to identify the region in the 
-space where the gripper will have to perform the grasping. Learning systems such as deep learning, especially CNNs, have reached the state of the art in robot grasping. Using the resources made available in the
-\emph{RoCoCo} laboratory, \emph{Sapienza}, University of Rome, including a \emph{Microsoft Kinect2} camera rgb-depth and a \emph{ROBOX} 6 d.o.f. antropomorphic robot manipulator, this thesis work aims at learning 
-to grasp unknow objects from experience. Hence this project introduces a new dataset consisting of 4000 acquisitions in which each scenario is related to a robot attempting to grasp an object. This dataset provides
-both rbg and depth registered images and also the data information about the point of grasping. In addition, this work also introduces a custom Convolutional Neural Network suitable for the features of the dataset
-and trained by using TensorFlow deep learning framework. All this immense work aims at converging the predicted outputs by the network on the same wavelength of which the same title of this thesis work makes 
-use:  learning to grasp unknow objects with a robotic arm from experience.
+The evolution of technology opened new revolutionary scenarios in the field of robotics,
+making it underhand the human presence in favor of increasingly efficient and automated
+systems. The use of robots capable of grasping complicated, and heavy, objects pushes
+the industrial sector towards automatic palletizing, replacing human labour as far as possible.
+The main reasons are purely economic, aimed to save time and production, which
+are essential in this field. Robotics grasping research allows machines understand which
+is the best way to grasp objects independently, and the choice of the best grasping pose.
+Given a CAD model, typical approaches are based on estimating the pose of the object
+by matching its model. Hence, the grasping pose is chosen according to the position and
+orientation in which the object has been located. We are facing with a clear problem of
+computer vision, a fundamental element to allow the robot to identify the region in the
+space where the gripper will perform the grasping.
+In the last years, deep learning based systems have reached impressive results in robot
+grasping. Using the resources made available in the RoCoCo laboratory at Sapienza,
+University of Rome, this thesis aims to solve the grasping problem of unknown objects
+by employing a self-supervised, data driven learning approach. Given an RGB image I
+and the corresponding depth map D acquired by a Microsoft Kinect2 sensor, we aim to
+estimate the best grasping position for a 6 degrees of freedom (d.o.f.) anthropomorphic
+robot manipulator equipped with a vacuum gripper. Among other contributions, this
+work introduces a new set of data composed of 4000 acquisitions in which each acquisition
+is related to a robot that try to grasp an object. We introduce a custom Convolutional
+Neural Network (CNN) that has been trained with the acquired dataset.
+We report several experiments performed by using known (i.e., object included in the
+training dataset) and unknown objects, showing that our system is able to effectively
+learn good grasping positions.
